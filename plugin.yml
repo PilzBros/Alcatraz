@@ -1,0 +1,31 @@
+name: Alcatraz
+main: com.pilzbros.Alcatraz.Alcatraz
+version: 1.4
+description: Jail role-play game
+author: Austin Pilz
+website: http://dev.bukkit.org/bukkit-plugins/alcatraz
+load: POSTWORLD
+softdepend: [Multiverse-Core, Multiworld, Vault, InSignsPlus, LanguageAPI]
+commands:
+    alcatraz:
+        description: Alcatraz user commands
+    alcatrazadmin:
+        description: Alcatraz Admin Commands
+    alc:
+        description: Alcatraz alias
+    alca:
+        description: Alcatraz Admin Commands alias
+permissions:
+    Alcatraz.*:
+        description: Gives access to all Alcatraz commands
+        children:
+            Alcatraz.admin: true
+            Alcatraz.user: true
+        default: op
+    Alcatraz.admin:
+        description: Gives admin access to Alcatraz admin commands
+        default: op
+    Alcatraz.user:
+        description: User level permissions to play Alcatraz
+        default: true
+
