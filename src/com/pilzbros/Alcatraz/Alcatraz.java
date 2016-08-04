@@ -47,7 +47,7 @@ import com.pilzbros.Alcatraz.Runnable.SignUpdate;
 public class Alcatraz extends JavaPlugin implements Listener 
 {
 	public static final String pluginName = "Alcatraz";
-	public static final String pluginVersion = "1.4";
+	public static final String pluginVersion = "1.5";
 	public static final String pluginPrefix = ChatColor.GOLD + "[Alcatraz] " + ChatColor.WHITE;
 	public static final String pluginAdminPrefix = ChatColor.GOLD + "[Alcatraz Admin] " + ChatColor.WHITE;
 	public static final String signPrefix = "[Alcatraz]";
