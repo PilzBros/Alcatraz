@@ -3,7 +3,7 @@ main: com.pilzbros.Alcatraz.Alcatraz
 version: 1.4
 description: Jail role-play game
 author: Austin Pilz
-website: http://dev.bukkit.org/bukkit-plugins/alcatraz
+website: https://github.com/austinpilz/Alcatraz/wiki
 load: POSTWORLD
 softdepend: [Multiverse-Core, Multiworld, Vault, InSignsPlus, LanguageAPI]
 commands:
