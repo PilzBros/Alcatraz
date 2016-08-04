@@ -1,8 +1,5 @@
 package com.pilzbros.Alcatraz;
 
-import io.puharesource.mc.titlemanager.TitleManager;
-import io.puharesource.mc.titlemanager.api.TitleObject;
-
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -10,9 +7,7 @@ import java.util.logging.Logger;
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -21,7 +16,6 @@ import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
 import com.empcraft.InSignsPlus;
-import com.empcraft.Placeholder;
 import com.pilzbros.Alcatraz.Command.AdminCommand;
 import com.pilzbros.Alcatraz.Command.UserCommand;
 import com.pilzbros.Alcatraz.Controller.PrisonController;
