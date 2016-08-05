@@ -33,6 +33,17 @@ public class AdminCommand implements CommandExecutor
 					sender.sendMessage(Alcatraz.pluginPrefix + ChatColor.GREEN + Alcatraz.language.get(sender, "chatSettingsReloaded", "Settings reloaded!"));
 					
 				}
+				else if (args[0].equalsIgnoreCase("here"))
+				{
+					if (PrisonCreation.players.containsKey(sender.getName()))
+					{
+						PrisonCreation.select((Player)sender, Bukkit.getPlayer(sender.getName()).getLocation().getBlock());
+					}
+					else
+					{
+						sender.sendMessage(Alcatraz.pluginPrefix + Alcatraz.language.get(sender, "chatSetupHereNotStarted", "You are not currently setting up a prison"));
+					}
+				}
 				else if (args[0].equalsIgnoreCase("update"))
 				{
 					if (Alcatraz.updateChecker.isUpdateNeeded())
@@ -71,7 +82,6 @@ public class AdminCommand implements CommandExecutor
 						{
 							Prison p = Alcatraz.prisonController.getPrison(args[1]);
 							p.delete();
-							Alcatraz.prisonController.removePrison(p);
 							
 							//Send success message
 							sender.sendMessage(Alcatraz.pluginPrefix + Alcatraz.language.get(sender, "chatPrisonDeletedSuccess", "Prison [{0}{1}{2}] removed {3}successfuly{4}!", ChatColor.RED, args[1], ChatColor.WHITE, ChatColor.GREEN, ChatColor.WHITE));

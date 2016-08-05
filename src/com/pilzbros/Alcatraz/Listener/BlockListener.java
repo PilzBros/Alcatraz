@@ -7,7 +7,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 
 import com.pilzbros.Alcatraz.Alcatraz;
@@ -64,7 +63,7 @@ public class BlockListener implements Listener
 								s.setLine(2, lines[2]);
 								//s.setLine(3,"");
 								s.update();
-								Alcatraz.prisonController.getPrison(lines[1]).getJoinSignManager().addJoinSign(event.getBlock().getLocation());
+								Alcatraz.prisonController.getPrison(lines[1]).getJoinSignManager().createNewJoinSign(event.getBlock().getLocation());
 							} else {
 
 								s.setLine(0, ChatColor.RED + Alcatraz.signPrefix);

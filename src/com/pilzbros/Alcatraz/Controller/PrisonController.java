@@ -52,7 +52,7 @@ public class PrisonController
 	 */
 	public void removePrison(Prison prison)
 	{
-		this.prisons.remove(prison);
+		this.prisons.remove(prison.getName());
 	}
 	
 	public boolean prisonExists(String name)

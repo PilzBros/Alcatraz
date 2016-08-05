@@ -419,11 +419,12 @@ public class InputOutput
     	{
 			Connection conn = InputOutput.getConnection();
 			PreparedStatement ps = conn.prepareStatement("DELETE FROM alcatraz_prisons WHERE Name = ?");
-			ps.setString(1, prison.getName());
+			ps.setString(1, prison.getName()+"");
 			ps.executeUpdate();
 			conn.commit();
 			
 			ps.close();
+			Alcatraz.log.log(Level.INFO, Alcatraz.consolePrefix + "Deleted prison " + prison.getName());
 		} 
     	catch (SQLException e) 
     	{
@@ -470,7 +471,7 @@ public class InputOutput
 							{
 								Sign s = (Sign)l.getBlock().getState();
 								Prison p = Alcatraz.prisonController.getPrison(result.getString("Prison"));
-								p.getJoinSignManager().addJoinSign(l);
+								p.getJoinSignManager().addJoinSign(new JoinSign(p, l));
 								joinSigns++;
 							}
 						}

@@ -28,11 +28,24 @@ public class JoinSignManager {
         }
     }
 
-    public void addJoinSign(Location l)
+    public void createNewJoinSign(Location l)
     {
         JoinSign newJoinSign = new JoinSign(prison, l);
-        this.joinSigns.add(newJoinSign);
-        newJoinSign.update();
         newJoinSign.saveToDB();
+        this.addJoinSign(newJoinSign);
+    }
+
+    public void addJoinSign(JoinSign js)
+    {
+        this.joinSigns.add(js);
+        js.update();
+    }
+
+    public void markSignsDeleted()
+    {
+        for(JoinSign sign : this.joinSigns)
+        {
+            sign.setDeleted();
+        }
     }
 }

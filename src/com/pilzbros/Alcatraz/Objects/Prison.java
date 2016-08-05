@@ -180,6 +180,7 @@ public class Prison
 		miningManager.forceRegenerate();
 		inmateManager.updateInmates();
 		cellManager.updateCells();
+		joinSignManager.markSignsDeleted();
 	}
 	
 	/**
@@ -189,7 +190,8 @@ public class Prison
 	{
 		shutdownActions();
 		inmateManager.releaseInmates();
-		Alcatraz.prisonController.removePrison(this);
 		Alcatraz.IO.deletePrison(this);
+		Alcatraz.prisonController.removePrison(this);
+
 	}
 }

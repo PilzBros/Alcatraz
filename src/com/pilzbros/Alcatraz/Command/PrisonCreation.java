@@ -36,7 +36,7 @@ public class PrisonCreation
 		}
 		
 		player.sendMessage(Alcatraz.pluginPrefix + ChatColor.AQUA + Alcatraz.language.get(player, "arenaCreationHeader1", "----------Alcatraz Arena Creation----------"));
-		player.sendMessage(ChatColor.GREEN + Alcatraz.language.get(player, "arenaCreationSelectPoint1", "Select the first point (lower point) of the prison perimeter with the selection tool ({0}{1}{2})", ChatColor.YELLOW, Material.getMaterial(Settings.getGlobalInt(Setting.SelectionTool)) ,ChatColor.WHITE));
+		player.sendMessage(ChatColor.GREEN + Alcatraz.language.get(player, "arenaCreationSelectPoint1Command", "Go to the first (lower) point of the perimeter of the prison and execute {0}{1}{2}", ChatColor.YELLOW, "/alca here",ChatColor.WHITE));
 		player.sendMessage(ChatColor.AQUA + "--------------------------------------");
 		players.put(player.getName(), new CreationPlayer());
 		players.get(player.getName()).name = name.toLowerCase();
@@ -64,7 +64,7 @@ public class PrisonCreation
 	private static void firstpoint(Player player, Block block)
 	{
 		player.sendMessage(Alcatraz.pluginPrefix + ChatColor.YELLOW + Alcatraz.language.get(player, "arenaCreationHeader1", "----------Alcatraz Arena Creation----------"));
-		player.sendMessage(ChatColor.GREEN + Alcatraz.language.get(player, "arenaCreationSelectPoint2", "First point selected! Select the second point (highest point) of the prison perimeter with the selection tool ({0}{1}{2})", ChatColor.YELLOW, Material.getMaterial(Settings.getGlobalInt(Setting.SelectionTool)) ,ChatColor.WHITE));
+		player.sendMessage(ChatColor.GREEN + Alcatraz.language.get(player, "arenaCreationSelectPoint2Command", "First point selected! Now go to the second point (highest point) of the prison perimeter and execute {0}{1}{2}", ChatColor.YELLOW, "/alca here",ChatColor.WHITE));
 		player.sendMessage(ChatColor.YELLOW + "---------------------------------------");
 		CreationPlayer cr = players.get(player.getName());
 		cr.b1 = block;
@@ -75,7 +75,7 @@ public class PrisonCreation
 	private static void secondpoint(Player player, Block block)
 	{
 		player.sendMessage(Alcatraz.pluginPrefix + ChatColor.YELLOW + Alcatraz.language.get(player, "arenaCreationHeader1", "----------Alcatraz Arena Creation----------"));
-		player.sendMessage(ChatColor.GREEN + Alcatraz.language.get(player, "arenaCreationSelectPoint3", "Second point selected! Now go inside the prison, and click anywhere to set your current location as the starting point with the selection tool ({0}{1}{2})", ChatColor.YELLOW, Material.getMaterial(Settings.getGlobalInt(Setting.SelectionTool)) ,ChatColor.WHITE));
+		player.sendMessage(ChatColor.GREEN + Alcatraz.language.get(player, "arenaCreationSelectPoint3Command", "Second point selected! Now go inside the prison, and stand where players should be teleported when joining the prison - then execute {0}{1}{2}", ChatColor.YELLOW, "/alca here",ChatColor.WHITE));
 		player.sendMessage(ChatColor.YELLOW + "----------------------------------------");
 		CreationPlayer cr = players.get(player.getName());
 		cr.b2 = block;
@@ -87,7 +87,7 @@ public class PrisonCreation
 	private static void startPoint(Player player)
 	{
 		player.sendMessage(Alcatraz.pluginPrefix + ChatColor.GOLD + Alcatraz.language.get(player, "arenaCreationHeader1", "----------Alcatraz Arena Creation----------"));
-		player.sendMessage(ChatColor.GREEN + Alcatraz.language.get(player, "arenaCreationSelectPoint4", "Start point selected! Now click anywhere to set your current location as the return location for when a player leaves the game with the selection tool ({0}{1}{2})", ChatColor.YELLOW, Material.getMaterial(Settings.getGlobalInt(Setting.SelectionTool)) ,ChatColor.WHITE));
+		player.sendMessage(ChatColor.GREEN + Alcatraz.language.get(player, "arenaCreationSelectPoint4Command", "Start point selected! Now go anywhere to set your current location as the return location for when a player leaves the game and execute {0}{1}{2}", ChatColor.YELLOW, "/alca here" ,ChatColor.WHITE));
 		player.sendMessage(ChatColor.GOLD + "----------------------------------------");
 		CreationPlayer cr = players.get(player.getName());
 		cr.startPoint = player.getLocation();

@@ -47,6 +47,28 @@ public class JoinSign
         }
     }
 
+    public void setDeleted()
+    {
+        try
+        {
+            Sign sign = this.getSign();
+            sign.setLine(0, ChatColor.RED + Alcatraz.signPrefix);
+            sign.setLine(1, prison.getName());
+            sign.setLine(2, ""); //Empty message
+            sign.setLine(3, ChatColor.RED + "" + ChatColor.BOLD + "DELETED");
+
+
+            sign.update();
+        }
+        catch (Exception e)
+        {
+            Log.info(Alcatraz.consolePrefix + " Broken join sign in " + prison.getName() + " - removed from DB");
+            Alcatraz.IO.removeSign(this.getSign().getLocation());
+        }
+
+        Alcatraz.IO.removeSign(this.getSign().getLocation());
+    }
+
     /**
      * Returns sign object
      * @return
