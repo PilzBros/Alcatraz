@@ -8,7 +8,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.pilzbros.Alcatraz.Alcatraz;
 import com.pilzbros.Alcatraz.Objects.Inmate;
 
-public class InmateLoot extends BukkitRunnable
+public class InmateLoot implements Runnable
 {
 	private Inmate looter;
 	private Inmate looted;

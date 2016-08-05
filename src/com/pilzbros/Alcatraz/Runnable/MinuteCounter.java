@@ -8,7 +8,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.pilzbros.Alcatraz.Alcatraz;
 import com.pilzbros.Alcatraz.Objects.Prison;
 
-public class MinuteCounter extends BukkitRunnable
+public class MinuteCounter implements Runnable
 {
 	@Override
 	public void run() 

@@ -291,6 +291,7 @@ public class InmateManager
 		if (inmateExists(p))
 		{
 			makeInmateInActive(getInmate(p));
+			getInmate(p).getCell().updateSigns();
 		}
 	}
 	
@@ -302,6 +303,7 @@ public class InmateManager
 		if (inmateExists(p))
 		{
 			makeInmateActive(getInmate(p));
+			getInmate(p).getCell().updateSigns();
 			p.sendMessage(Alcatraz.pluginPrefix + Alcatraz.language.get(p, "chatWelcomeBack", "Welcome back to Alcatraz!"));
 		}
 	}
@@ -527,48 +529,41 @@ public class InmateManager
 	 */
 	public void checkInmates()
 	{
-		Iterator it = activeInmates.entrySet().iterator();
-		while (it.hasNext()) 
-		{
-		    Map.Entry entry = (Map.Entry) it.next();
-		    Inmate inmate = (Inmate)entry.getValue();
-		    boolean removed = false;
-		   
-		    //Check Strikes
-		    if (inmate.getStrikes() >= Settings.getGlobalInt(Setting.MaxStrikes))
-		    {
-		    	inmate.getPlayer().sendMessage(Alcatraz.pluginPrefix + Alcatraz.language.get(inmate.getPlayer(), "chatExecutedStrikes", "You've been executed for accumulating too many strikes! Thanks for playing Alcatraz in {0}{1}", ChatColor.RED, inmate.getPrison().getName()));
-		    	Alcatraz.titleManagerAPI.sendMessage(inmate.getPlayer(), Alcatraz.language.get(inmate.getPlayer(), "titleExecutedStrikes", "You've been {0} executed {1}", ChatColor.RED, ChatColor.WHITE), Alcatraz.language.get(inmate.getPlayer(), "titleExecutedStrikes2", "for accumulating too many strikes!"));
+		if (activeInmates.size() > 0) {
+			Iterator it = activeInmates.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry entry = (Map.Entry) it.next();
+				Inmate inmate = (Inmate) entry.getValue();
+				boolean removed = false;
 
-		    	this.releaseInmate(inmate.getPlayer());
-		    	removed = true;
-		    	return;
-		    }
-		    else
-		    {
-		    	if (inmate.getStrikes() == Settings.getGlobalInt(Setting.MaxStrikes)-1 && inmate.strikeWarning())
-		    	{
-		    		inmate.getPlayer().sendMessage(Alcatraz.language.get(inmate.getPlayer(), "chatTimeLeftWarning", "{0} WARNING! {1} You're one strike away from being executed. Purchase a strike removal, if you can, to keep playing: ", ChatColor.RED, ChatColor.WHITE) + ChatColor.BLUE + "/alc buy strike [#]");
-			    	inmate.setStrikeWarning(false);
-		    	}
-		    }
-		    
-		    if (removed == false)
-		    {
-			    if (inmate.getMinutesLeft() <= 0)
-			    {
-			    	inmate.getPlayer().sendMessage(Alcatraz.pluginPrefix + Alcatraz.language.get(inmate.getPlayer(), "chatExecutedTime", "You've been executed for running out of time! Thanks for playing Alcatraz in {0}{1}", ChatColor.RED, inmate.getPrison().getName()));
-			    	Alcatraz.titleManagerAPI.sendMessage(inmate.getPlayer(), Alcatraz.language.get(inmate.getPlayer(), "titleExecutedTime", "You've been {0} executed {1}", ChatColor.RED, ChatColor.WHITE), Alcatraz.language.get(inmate.getPlayer(), "titleExecutedTime2", "for running out of time!"));
+				//Check Strikes
+				if (inmate.getStrikes() >= Settings.getGlobalInt(Setting.MaxStrikes)) {
+					inmate.getPlayer().sendMessage(Alcatraz.pluginPrefix + Alcatraz.language.get(inmate.getPlayer(), "chatExecutedStrikes", "You've been executed for accumulating too many strikes! Thanks for playing Alcatraz in {0}{1}", ChatColor.RED, inmate.getPrison().getName()));
+					Alcatraz.titleManagerAPI.sendMessage(inmate.getPlayer(), Alcatraz.language.get(inmate.getPlayer(), "titleExecutedStrikes", "You've been {0} executed {1}", ChatColor.RED, ChatColor.WHITE), Alcatraz.language.get(inmate.getPlayer(), "titleExecutedStrikes2", "for accumulating too many strikes!"));
 
-			    	this.releaseInmate(inmate.getPlayer());
-			    	return;
-			    }
-			    else if (inmate.getMinutesLeft() <= 15 && inmate.timeWarning())
-			    {
-			    	inmate.getPlayer().sendMessage(Alcatraz.language.get(inmate.getPlayer(), "chatTimeLeftWarning", "{0} WARNING! {1} You're less than 15 minutes away from being executed. Purchase more time, if you can, to keep playing: ", ChatColor.RED, ChatColor.WHITE) + ChatColor.BLUE + "/alc buy minute [#]");
-			    	inmate.setTimeWarning(false);
-			    }
-		    }
+					this.releaseInmate(inmate.getPlayer());
+					removed = true;
+					return;
+				} else {
+					if (inmate.getStrikes() == Settings.getGlobalInt(Setting.MaxStrikes) - 1 && inmate.strikeWarning()) {
+						inmate.getPlayer().sendMessage(Alcatraz.language.get(inmate.getPlayer(), "chatTimeLeftWarning", "{0} WARNING! {1} You're one strike away from being executed. Purchase a strike removal, if you can, to keep playing: ", ChatColor.RED, ChatColor.WHITE) + ChatColor.BLUE + "/alc buy strike [#]");
+						inmate.setStrikeWarning(false);
+					}
+				}
+
+				if (removed == false) {
+					if (inmate.getMinutesLeft() <= 0) {
+						inmate.getPlayer().sendMessage(Alcatraz.pluginPrefix + Alcatraz.language.get(inmate.getPlayer(), "chatExecutedTime", "You've been executed for running out of time! Thanks for playing Alcatraz in {0}{1}", ChatColor.RED, inmate.getPrison().getName()));
+						Alcatraz.titleManagerAPI.sendMessage(inmate.getPlayer(), Alcatraz.language.get(inmate.getPlayer(), "titleExecutedTime", "You've been {0} executed {1}", ChatColor.RED, ChatColor.WHITE), Alcatraz.language.get(inmate.getPlayer(), "titleExecutedTime2", "for running out of time!"));
+
+						this.releaseInmate(inmate.getPlayer());
+						return;
+					} else if (inmate.getMinutesLeft() <= 15 && inmate.timeWarning()) {
+						inmate.getPlayer().sendMessage(Alcatraz.language.get(inmate.getPlayer(), "chatTimeLeftWarning", "{0} WARNING! {1} You're less than 15 minutes away from being executed. Purchase more time, if you can, to keep playing: ", ChatColor.RED, ChatColor.WHITE) + ChatColor.BLUE + "/alc buy minute [#]");
+						inmate.setTimeWarning(false);
+					}
+				}
+			}
 		}
 	}
 	

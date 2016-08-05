@@ -56,24 +56,20 @@ public class PlayerListener implements Listener
 	
 	}
 
-	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onJoin(PlayerJoinEvent event)
     {
-        if (Alcatraz.updateChecker.isUpdateNeeded() && event.getPlayer().hasPermission("Alcatraz.Admin"))
+		if (Alcatraz.prisonController.isPlaying(event.getPlayer()))
+		{
+			Alcatraz.prisonController.getPlayerPrison(event.getPlayer()).getInmateManager().inmateLogon(event.getPlayer());
+		}
+
+    	if (Alcatraz.updateChecker.isUpdateNeeded() && event.getPlayer().hasPermission("Alcatraz.Admin"))
         {
             event.getPlayer().sendMessage(Alcatraz.pluginPrefix + Alcatraz.language.get(event.getPlayer(), "chatLoginUpdateNeeded", "{0}Update! {1}A newer version of Alcatraz is available for update! Please update by visiting http://alcatraz.austinpilz.com", ChatColor.GREEN, ChatColor.WHITE));
         }
 
     }
-	
-	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-	public void onLogin(PlayerLoginEvent event) 
-	{
-	   if (Alcatraz.prisonController.isPlaying(event.getPlayer()))
-	   {
-		   Alcatraz.prisonController.getPlayerPrison(event.getPlayer()).getInmateManager().inmateLogon(event.getPlayer());
-	   }
-	}
 	
 	@EventHandler
 	public void onKill(PlayerDeathEvent event)
@@ -355,20 +351,25 @@ public class PlayerListener implements Listener
 		else
 		{
 			//Not playing
-			if (event.getClickedBlock().getType().equals(Material.SIGN) || event.getClickedBlock().getType().equals(Material.WALL_SIGN) || event.getClickedBlock().getType().equals(Material.SIGN_POST)) {
-				Sign s = (Sign) event.getClickedBlock().getState();
-				String[] lines = s.getLines();
+			try {
+				if (event.getClickedBlock().getType().equals(Material.SIGN) || event.getClickedBlock().getType().equals(Material.WALL_SIGN) || event.getClickedBlock().getType().equals(Material.SIGN_POST)) {
+					Sign s = (Sign) event.getClickedBlock().getState();
+					String[] lines = s.getLines();
 
-				if (lines[0].equalsIgnoreCase(ChatColor.RED + Alcatraz.signPrefix)) {
-					if (Alcatraz.prisonController.prisonExists(lines[1])) {
-						Prison p = Alcatraz.prisonController.getPrison(lines[1]);
+					if (lines[0].equalsIgnoreCase(ChatColor.RED + Alcatraz.signPrefix)) {
+						if (Alcatraz.prisonController.prisonExists(lines[1])) {
+							Prison p = Alcatraz.prisonController.getPrison(lines[1]);
 
-						if (lines[3].equalsIgnoreCase("Click to join!"))
-						{
-							p.getInmateManager().newInmate(event.getPlayer());
+							if (lines[3].equalsIgnoreCase("Click to join!")) {
+								p.getInmateManager().newInmate(event.getPlayer());
+							}
 						}
 					}
 				}
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
 			}
 		}
 	}

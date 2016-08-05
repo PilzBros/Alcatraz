@@ -88,6 +88,7 @@ public class CellManager
 				if (!cell.getValue().isOccupied())
 				{
 					cell.getValue().setInmate(i);
+					cell.getValue().updateSigns();
 					i.setCell(cell.getValue());
 					ic = cell.getValue();
 					found = true;

@@ -1,6 +1,7 @@
 package com.pilzbros.Alcatraz.Objects;
 
 import java.util.UUID;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -40,7 +41,7 @@ public class CellSign
 			if (cell.isOccupied())
 			{
 				OfflinePlayer inmate = Bukkit.getServer().getOfflinePlayer(UUID.fromString(cell.getInmate().getUUID()));
-				
+
 				sign.setLine(2, ChatColor.BLUE + inmate.getName()); //Player Name
 				
 				//Online status

@@ -42,7 +42,7 @@ import com.pilzbros.Alcatraz.Runnable.SignUpdate;
 public class Alcatraz extends JavaPlugin implements Listener 
 {
 	public static final String pluginName = "Alcatraz";
-	public static final String pluginVersion = "1.6";
+	public static final String pluginVersion = "1.6.1";
 	public static final String pluginPrefix = ChatColor.GOLD + "[Alcatraz] " + ChatColor.WHITE;
 	public static final String pluginAdminPrefix = ChatColor.GOLD + "[Alcatraz Admin] " + ChatColor.WHITE;
 	public static final String signPrefix = "[Alcatraz]";
@@ -74,8 +74,7 @@ public class Alcatraz extends JavaPlugin implements Listener
 	{
 		//
 	}
-	
-	@SuppressWarnings({ "deprecation", "unused" })
+
 	@Override
 	public void onEnable()
 	{
@@ -134,15 +133,16 @@ public class Alcatraz extends JavaPlugin implements Listener
 		getCommand("alca").setExecutor(new AdminCommand());
 		
 		//Schedule Tasks
-		BukkitTask managerTask = Bukkit.getScheduler().runTaskTimer(this, new MinuteCounter(), 60, 60); //Inmate minute counter
+		int managerTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new MinuteCounter(), 300, 300);
 		BukkitTask scoreboardTask = Bukkit.getScheduler().runTaskTimer(this, new ScoreboardTask(), 40, 40); //Update inmate scoreboards
-		BukkitTask mealService = Bukkit.getScheduler().runTaskTimer(this, new MealService(), 60, 60); //Meal Time
-		BukkitTask inmateUpdate = Bukkit.getScheduler().runTaskTimer(this, new InmateUpdate(), 600, 600); //Updating inmate information
-		BukkitTask signUpdate = Bukkit.getScheduler().runTaskTimer(this, new SignUpdate(), 80, 80); //Updating Cell Signs
-		BukkitTask chestGenerator = Bukkit.getScheduler().runTaskTimer(this, new ChestGenerator(), 60, 60); //Refreshing reward chests
+		BukkitTask mealService = Bukkit.getScheduler().runTaskTimer(this, new MealService(), 18000, 18000); //Meal Time
+		BukkitTask inmateUpdate = Bukkit.getScheduler().runTaskTimer(this, new InmateUpdate(), 6000, 6000); //Updating inmate information
+		//BukkitTask signUpdate = Bukkit.getScheduler().runTaskTimer(this, new SignUpdate(), 6000, 6000); //Updating Cell Signs
+		BukkitTask chestGenerator = Bukkit.getScheduler().runTaskTimer(this, new ChestGenerator(), 600, 600); //Refreshing reward chests
 		BukkitTask prisonCheck = Bukkit.getScheduler().runTaskTimer(this, new PrisonCheck(), 200, 200); //10 sec
-		BukkitTask moneyDeposit = Bukkit.getScheduler().runTaskTimer(this, new MoneyDeposit(), 100, 100); //Sync Vault balance
-		BukkitTask locationCheck = Bukkit.getScheduler().runTaskTimer(this, new LocationCheck(), 100, 100); //Check inmate locations
+		BukkitTask moneyDeposit = Bukkit.getScheduler().runTaskTimer(this, new MoneyDeposit(), 1200, 1200); //Sync Vault balance
+		//BukkitTask locationCheck = Bukkit.getScheduler().runTaskTimer(this, new LocationCheck(), 100, 100); //Check inmate locations
+
 		
 		//In Signs Plus
 		Plugin insignsplus = getServer().getPluginManager().getPlugin("InSignsPlus");
