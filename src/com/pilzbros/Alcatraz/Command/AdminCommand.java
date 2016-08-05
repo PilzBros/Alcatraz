@@ -33,6 +33,18 @@ public class AdminCommand implements CommandExecutor
 					sender.sendMessage(Alcatraz.pluginPrefix + ChatColor.GREEN + Alcatraz.language.get(sender, "chatSettingsReloaded", "Settings reloaded!"));
 					
 				}
+				else if (args[0].equalsIgnoreCase("update"))
+				{
+					if (Alcatraz.updateChecker.isUpdateNeeded())
+					{
+						sender.sendMessage(Alcatraz.pluginPrefix + Alcatraz.language.get(sender, "chatUpdateNeeded", "You are running Alcatraz v{0} and the latest version is v{1}. Visit the Spigot page to update!", Alcatraz.pluginVersion, Alcatraz.updateChecker.getLatestVersion()));
+					}
+					else
+					{
+						sender.sendMessage(Alcatraz.pluginPrefix + ChatColor.GREEN + Alcatraz.language.get(sender, "chatNoUpdateNeeded", "Alcatraz v{0} is the latest version!", Alcatraz.pluginVersion));
+					}
+
+					}
 				else if (args[0].equalsIgnoreCase("setup"))
 				{
 					if (args.length == 2)

@@ -58,12 +58,13 @@ public class InmateManager
 	{
 		return activeInmates.size();
 	}
-	
+
+	public int numInactiveInmates() { return inmates.size() - activeInmates.size(); }
 	/**
 	 * Returns total number of inmates, active + inactive
 	 * @return
 	 */
-	public int numInmates()
+	public int numTotalInmates()
 	{
 		return inmates.size();
 	}
@@ -159,49 +160,48 @@ public class InmateManager
 	/**
 	 * Prepares and adds inmate to the prison game
 	 */
-	public void newInmate(Player p)
-	{
-		//Create Inmate
-		Inmate inmate = new Inmate(p.getUniqueId().toString(), 0, Settings.getGlobalInt(Setting.DefaultTime), 0, 0, Settings.getGlobalInt(Setting.DefaultMoney), prison);
+	public void newInmate(Player p) {
+		if (!this.isPlaying(p)) {
+			//Create Inmate
+			Inmate inmate = new Inmate(p.getUniqueId().toString(), 0, Settings.getGlobalInt(Setting.DefaultTime), 0, 0, Settings.getGlobalInt(Setting.DefaultMoney), prison);
 
-		//Add to hashmaps
-		this.addInmate(inmate);
-		this.addActiveInmate(inmate);
-		
-		//Gamemode
-		p.setGameMode(GameMode.SURVIVAL);
-		p.setHealth(p.getMaxHealth());
-		p.setFoodLevel(20);
-		p.setExhaustion((float) 0.0);
-		
-		//Assign Cell
-		if (!prison.getCellManager().assignCell(inmate))
-		{
-			p.sendMessage(Alcatraz.pluginPrefix + ChatColor.RED + Alcatraz.language.get(p, "cellAssignError", "There was an error while assigning you a cell"));
+			//Add to hashmaps
+			this.addInmate(inmate);
+			this.addActiveInmate(inmate);
+
+			//Gamemode
+			p.setGameMode(GameMode.SURVIVAL);
+			p.setHealth(p.getMaxHealth());
+			p.setFoodLevel(20);
+			p.setExhaustion((float) 0.0);
+
+			//Assign Cell
+			if (!prison.getCellManager().assignCell(inmate)) {
+				p.sendMessage(Alcatraz.pluginPrefix + ChatColor.RED + Alcatraz.language.get(p, "cellAssignError", "There was an error while assigning you a cell"));
+			}
+
+			//Scoreboards
+			inmate.getScoreboardManager().displayStats();
+
+			//Inventory
+			if (Settings.getGlobalBoolean(Setting.ClearInventory)) {
+				inmate.getPlayer().getInventory().clear();
+			}
+
+			//Teleport
+			teleportInmateIn(inmate);
+
+			//IO
+			Alcatraz.IO.newInmate(inmate);
+
+			//Update Inmate
+			inmate.update();
+
+
+			//Send welcome message
+			Alcatraz.titleManagerAPI.sendMessage(p, Alcatraz.language.get(inmate.getPlayer(), "titleWelcomeNoCell1", "Welcome to {0}{1}", ChatColor.RED, WordUtils.capitalize(inmate.getPrison().getName())), "");
+			p.sendMessage(Alcatraz.pluginPrefix + Alcatraz.language.get(inmate.getPlayer(), "chatWelcome", "{0}WARDEN: {1} Welcome, inmate, to {2}{3}{4}. We've setup your prison account with the basics, like money. Take a look around and find your cell!", ChatColor.GREEN, ChatColor.WHITE, ChatColor.RED, inmate.getPrison().getName(), ChatColor.WHITE));
 		}
-		
-		//Scoreboards
-		inmate.getScoreboardManager().displayStats();
-		
-		//Inventory
-		if (Settings.getGlobalBoolean(Setting.ClearInventory))
-		{
-			inmate.getPlayer().getInventory().clear();
-		}
-		
-		//Teleport
-		teleportInmateIn(inmate);
-		
-		//IO
-		Alcatraz.IO.newInmate(inmate);
-		
-		//Update Inmate
-		inmate.update();
-		
-		
-		//Send welcome message
-		Alcatraz.titleManagerAPI.sendMessage(p, Alcatraz.language.get(inmate.getPlayer(), "titleWelcomeNoCell1", "Welcome to {0}{1}", ChatColor.RED, WordUtils.capitalize(inmate.getPrison().getName())), "");
-		p.sendMessage(Alcatraz.pluginPrefix + Alcatraz.language.get(inmate.getPlayer(), "chatWelcome", "{0}WARDEN: {1} Welcome, inmate, to {2}{3}{4}. We've setup your prison account with the basics, like money. Take a look around and find your cell!", ChatColor.GREEN, ChatColor.WHITE, ChatColor.RED, inmate.getPrison().getName(), ChatColor.WHITE));
 	}
 	
 	
@@ -248,7 +248,7 @@ public class InmateManager
 	
 	/**
 	 * Releases player from Alcatraz
-	 * @param UUID
+	 * @param playerUUID Players UUID
 	 */
 	private void releaseInmate(String playerUUID)
 	{
@@ -367,8 +367,8 @@ public class InmateManager
 	
 	/**
 	 * Returns boolean if inmate is active/inactive in Alcatraz
-	 * @param uuid
-	 * @return
+	 * @param p Player object
+	 * @return boolean if active/inactive
 	 */
 	public boolean inmateExists(Player p)
 	{
@@ -483,7 +483,8 @@ public class InmateManager
 		//Killer
 		killer.addKill();
 		killer.getPlayer().sendMessage(Alcatraz.pluginPrefix + ChatColor.GREEN + Alcatraz.language.get(killer.getPlayer(), "chatKiller", "You killed ") + ChatColor.BLUE + killed.getPlayer().getName());
-		//TODO - transfer inventories from killed to killers cell chest
+
+		this.messageActiveInmates(killer.getPlayer().getName() + " murdered " + ChatColor.RED + killed.getPlayer().getName() + ChatColor.WHITE + ", marking their kill #" + ChatColor.RED + killer.getKills());
 	}
 	
 	/**

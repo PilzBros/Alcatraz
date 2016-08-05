@@ -24,7 +24,7 @@ public class ScoreboardManager
 		this.prison = p;
 		this.inmate = i;
 		this.statsBoard = new BoardManager("PrisonStats", ChatColor.RED + "-- " + WordUtils.capitalize(inmate.getPrison().getName()) + " --", DisplaySlot.SIDEBAR);
-		this.playerTicker = new BoardManager("PlayerTicket", "PRISONER", DisplaySlot.BELOW_NAME);
+		this.playerTicker = new BoardManager("PlayerTicker", "PRISONER", DisplaySlot.BELOW_NAME);
 		this.dummy = new BoardManager("", "", DisplaySlot.SIDEBAR);
 	}
 	
@@ -47,8 +47,7 @@ public class ScoreboardManager
 		statsBoard.setObjectiveScore(ChatColor.DARK_RED + Alcatraz.language.get(inmate.getPlayer(), "scoreboardKills", "Kills"), (int)inmate.getKills());
 		statsBoard.setObjectiveScore(ChatColor.DARK_PURPLE + "" + ChatColor.STRIKETHROUGH + Alcatraz.language.get(inmate.getPlayer(), "scoreboardStrikes", "Strikes"), (int)inmate.getStrikes());
 		statsBoard.setObjectiveScore(ChatColor.YELLOW + Alcatraz.language.get(inmate.getPlayer(), "scoreboardOnline", "Online"), (int)prison.getInmateManager().numActiveInmates());
-		
-		
+
 		if (inmate.getCell() != null)
 		{
 			statsBoard.setObjectiveScore(ChatColor.BLUE + Alcatraz.language.get(inmate.getPlayer(), "scoreboardCell", "Cell #"), Integer.parseInt(inmate.getCell().getCellNumber()));
@@ -57,7 +56,7 @@ public class ScoreboardManager
 	
 	private void updateTicker()
 	{
-		//playerTicker.addObjectiveScore(ChatColor.RED + "Kills", (int)inmate.getKills());
+		playerTicker.setObjectiveScore(ChatColor.RED + "Kills", (int)inmate.getKills());
 	}
 	
 	public void displayStats()

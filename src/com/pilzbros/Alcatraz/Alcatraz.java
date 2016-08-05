@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.pilzbros.Alcatraz.IO.SpigotUpdateChecker;
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.Bukkit;
@@ -41,7 +42,7 @@ import com.pilzbros.Alcatraz.Runnable.SignUpdate;
 public class Alcatraz extends JavaPlugin implements Listener 
 {
 	public static final String pluginName = "Alcatraz";
-	public static final String pluginVersion = "1.5";
+	public static final String pluginVersion = "1.6";
 	public static final String pluginPrefix = ChatColor.GOLD + "[Alcatraz] " + ChatColor.WHITE;
 	public static final String pluginAdminPrefix = ChatColor.GOLD + "[Alcatraz Admin] " + ChatColor.WHITE;
 	public static final String signPrefix = "[Alcatraz]";
@@ -49,7 +50,6 @@ public class Alcatraz extends JavaPlugin implements Listener
 	
 	public final static String pluginURL = "http://dev.bukkit.org/bukkit-plugins/alcatraz/";
 	public static final Logger log = Logger.getLogger("Minecraft");
-	public static boolean updateNeeded;
 	public static Economy econ = null;
 	public static LanguageWrapper language;
 	
@@ -57,6 +57,7 @@ public class Alcatraz extends JavaPlugin implements Listener
 	public static PrisonController prisonController;
 	public static Alcatraz instance;
 	public static InputOutput IO;
+	public static SpigotUpdateChecker updateChecker;
 	public static BukkitScheduler scheduler;
 	public static InventoryActions inventoryActions;
 	public static InSignsPlus ISP;
@@ -162,7 +163,18 @@ public class Alcatraz extends JavaPlugin implements Listener
 		{
 	       log.log(Level.WARNING, consolePrefix + Alcatraz.language.get(Bukkit.getConsoleSender(), "consoleMetricsSubmitted", "Encountered an error while attempting to submit metrics!"));
 	    }
-		
+
+	    //Check for Update
+		Alcatraz.updateChecker = new SpigotUpdateChecker();
+		try {
+			Alcatraz.updateChecker.checkUpdate(Alcatraz.pluginVersion);
+			log.log(Level.INFO, Alcatraz.consolePrefix + language.get(Bukkit.getConsoleSender(), "consolePluginUpdateChecked", "Checked for update! Current version: v{0} - Newest Version: v{1}", Alcatraz.pluginVersion, Alcatraz.updateChecker.getLatestVersion()));
+		} catch (Exception e) {
+			log.log(Level.INFO, Alcatraz.consolePrefix + language.get(Bukkit.getConsoleSender(), "consolePluginUpdateFailed", "Update check failed!"));
+			e.printStackTrace();
+		}
+
+
 		//Log bootup time
 		log.log(Level.INFO, Alcatraz.consolePrefix + language.get(Bukkit.getConsoleSender(), "consolePluginEnabled", "Bootup took {0} ms", (System.currentTimeMillis() % 1000 - startMili)));
 	}

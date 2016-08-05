@@ -28,7 +28,13 @@ public class UserCommand implements CommandExecutor
 		{
 			if (args.length < 1)
 			{
-				sender.sendMessage(Alcatraz.pluginPrefix + Alcatraz.language.get(sender, "chatToPlay", "To play Alcatraz, execute {0} /alc play", ChatColor.YELLOW));
+				if (!Alcatraz.prisonController.isActivelyPlaying((Player)sender))
+				{
+					sender.sendMessage(Alcatraz.pluginPrefix + Alcatraz.language.get(sender, "chatCurrentlyPlayingDefault", "You're currently playing Alcatraz! To quit, execute {0}/alc quit", ChatColor.YELLOW));
+				}
+				else {
+					sender.sendMessage(Alcatraz.pluginPrefix + Alcatraz.language.get(sender, "chatToPlay", "To play Alcatraz, execute {0} /alc play", ChatColor.YELLOW));
+				}
 			}
 			else if (args.length >= 1)
 			{

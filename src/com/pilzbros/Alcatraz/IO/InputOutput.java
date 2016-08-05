@@ -12,6 +12,7 @@ import java.sql.Statement;
 import java.util.UUID;
 import java.util.logging.Level;
 
+import com.pilzbros.Alcatraz.Objects.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -21,14 +22,9 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.pilzbros.Alcatraz.Alcatraz;
-import com.pilzbros.Alcatraz.Objects.CellSign;
-import com.pilzbros.Alcatraz.Objects.Inmate;
-import com.pilzbros.Alcatraz.Objects.Prison;
-import com.pilzbros.Alcatraz.Objects.PrisonCell;
 
 
-
-public class InputOutput 
+public class InputOutput
 {
     public static YamlConfiguration global;
     private static Connection connection;
@@ -448,6 +444,7 @@ public class InputOutput
 			result = ps.executeQuery();
 			
 			int count = 0;
+			int joinSigns = 0;
 			int removed = 0;
 			
 			while (result.next())
@@ -469,6 +466,12 @@ public class InputOutput
 								cell.addSign(sign);
 								sign.update();
 								count++;
+							} else if(result.getString("Type").equalsIgnoreCase("Join"))
+							{
+								Sign s = (Sign)l.getBlock().getState();
+								Prison p = Alcatraz.prisonController.getPrison(result.getString("Prison"));
+								p.getJoinSignManager().addJoinSign(l);
+								joinSigns++;
 							}
 						}
 						else
@@ -498,7 +501,12 @@ public class InputOutput
 			{
 				Alcatraz.log.log(Level.INFO, Alcatraz.consolePrefix + Alcatraz.language.get(Bukkit.getConsoleSender(),"consolesignsLoaded", "{0} prison signs loaded", count));
 			}
-				
+
+			if (joinSigns > 0)
+			{
+				Alcatraz.log.log(Level.INFO, Alcatraz.consolePrefix + Alcatraz.language.get(Bukkit.getConsoleSender(),"consoleJoinSignsLoaded", "{0} join signs loaded", joinSigns));
+			}
+
 			if (removed > 0)
 			{	
 				Alcatraz.log.log(Level.INFO, Alcatraz.consolePrefix + Alcatraz.language.get(Bukkit.getConsoleSender(),"consoleSignsRemoved", "{0} prison signs found broken and removed from database", removed));

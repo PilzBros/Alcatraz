@@ -22,13 +22,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.material.Door;
 import org.bukkit.block.Sign;
@@ -61,6 +55,16 @@ public class PlayerListener implements Listener
 		}
 	
 	}
+
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onJoin(PlayerJoinEvent event)
+    {
+        if (Alcatraz.updateChecker.isUpdateNeeded() && event.getPlayer().hasPermission("Alcatraz.Admin"))
+        {
+            event.getPlayer().sendMessage(Alcatraz.pluginPrefix + Alcatraz.language.get(event.getPlayer(), "chatLoginUpdateNeeded", "{0}Update! {1}A newer version of Alcatraz is available for update! Please update by visiting http://alcatraz.austinpilz.com", ChatColor.GREEN, ChatColor.WHITE));
+        }
+
+    }
 	
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onLogin(PlayerLoginEvent event) 
@@ -297,7 +301,7 @@ public class PlayerListener implements Listener
 						Sign s = (Sign)event.getClickedBlock().getState();
 						String[] lines = s.getLines();
 						
-						if (lines[0].equalsIgnoreCase(ChatColor.RED + "[Alcatraz]"))
+						if (lines[0].equalsIgnoreCase(ChatColor.RED + Alcatraz.signPrefix))
 						{
 							if (Alcatraz.prisonController.prisonExists(lines[1]))
 							{
@@ -319,6 +323,10 @@ public class PlayerListener implements Listener
 								{
 									p.getInmateManager().loot(p.getInmateManager().getInmate(event.getPlayer()));
 				
+								}
+								else if (lines[3].equalsIgnoreCase("Click to join!"))
+								{
+									event.getPlayer().sendMessage(Alcatraz.pluginPrefix + Alcatraz.language.get(event.getPlayer(), "chatAlcatrazAlreadyPlaying", "You're already playing Alcatraz! To quit: {0} /alcatraz quit", ChatColor.BLUE));
 								}
 								else
 								{
@@ -342,6 +350,25 @@ public class PlayerListener implements Listener
 			catch (Exception e)
 			{
 				//Ignore 
+			}
+		}
+		else
+		{
+			//Not playing
+			if (event.getClickedBlock().getType().equals(Material.SIGN) || event.getClickedBlock().getType().equals(Material.WALL_SIGN) || event.getClickedBlock().getType().equals(Material.SIGN_POST)) {
+				Sign s = (Sign) event.getClickedBlock().getState();
+				String[] lines = s.getLines();
+
+				if (lines[0].equalsIgnoreCase(ChatColor.RED + Alcatraz.signPrefix)) {
+					if (Alcatraz.prisonController.prisonExists(lines[1])) {
+						Prison p = Alcatraz.prisonController.getPrison(lines[1]);
+
+						if (lines[3].equalsIgnoreCase("Click to join!"))
+						{
+							p.getInmateManager().newInmate(event.getPlayer());
+						}
+					}
+				}
 			}
 		}
 	}

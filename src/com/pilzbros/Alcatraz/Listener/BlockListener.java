@@ -55,18 +55,26 @@ public class BlockListener implements Listener
 				{
 					if (event.getPlayer().hasPermission("Alcatraz.Admin"))
 					{
-						if (Alcatraz.prisonController.prisonExists(lines[1]))
-						{
-	
+						if (Alcatraz.prisonController.prisonExists(lines[1])) {
 							event.setCancelled(true);
-							
-							s.setLine(0, ChatColor.RED + Alcatraz.signPrefix);
-							s.setLine(1, lines[1]);
-							s.setLine(2, lines[2]);
-							//s.setLine(3,"");
-							s.update();
-							
-							event.getPlayer().sendMessage(Alcatraz.pluginPrefix + Alcatraz.language.get(event.getPlayer(), "chatSignAddSuccess", "Sign added successfully!"));
+
+							if (lines[2].equalsIgnoreCase("Join")) {
+								s.setLine(0, ChatColor.RED + Alcatraz.signPrefix);
+								s.setLine(1, lines[1]);
+								s.setLine(2, lines[2]);
+								//s.setLine(3,"");
+								s.update();
+								Alcatraz.prisonController.getPrison(lines[1]).getJoinSignManager().addJoinSign(event.getBlock().getLocation());
+							} else {
+
+								s.setLine(0, ChatColor.RED + Alcatraz.signPrefix);
+								s.setLine(1, lines[1]);
+								s.setLine(2, lines[2]);
+								//s.setLine(3,"");
+								s.update();
+
+								event.getPlayer().sendMessage(Alcatraz.pluginPrefix + Alcatraz.language.get(event.getPlayer(), "chatSignAddSuccess", "Sign added successfully!"));
+							}
 						}
 						else
 						{

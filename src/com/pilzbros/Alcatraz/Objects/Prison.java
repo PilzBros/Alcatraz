@@ -1,14 +1,10 @@
 package com.pilzbros.Alcatraz.Objects;
 
+import com.pilzbros.Alcatraz.Manager.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 import com.pilzbros.Alcatraz.Alcatraz;
-import com.pilzbros.Alcatraz.Manager.CellManager;
-import com.pilzbros.Alcatraz.Manager.ChestManager;
-import com.pilzbros.Alcatraz.Manager.InmateManager;
-import com.pilzbros.Alcatraz.Manager.MiningManager;
-import com.pilzbros.Alcatraz.Manager.PrisonManager;
 
 public class Prison 
 {
@@ -33,6 +29,7 @@ public class Prison
 	private final ChestManager chestManager;
 	private final CellManager cellManager;
 	private final MiningManager miningManager;
+	private final JoinSignManager joinSignManager;
 	
 	public static long lastRaid;
 	
@@ -54,6 +51,7 @@ public class Prison
 		Prison.lastRaid = 0;
 		this.cellManager = new CellManager(this);
 		this.miningManager = new MiningManager(this);
+		this.joinSignManager = new JoinSignManager(this);
 	}
 	
 	public Prison(String name, int max, double px1, double py1, double pz1, double px2, double py2, double pz2, Location pstart, Location preturn)
@@ -73,6 +71,7 @@ public class Prison
 		this.chestManager = new ChestManager(this);
 		this.cellManager = new CellManager(this);
 		this.miningManager = new MiningManager(this);
+		this.joinSignManager = new JoinSignManager(this);
 		Prison.lastRaid = 0;
 	}
 	
@@ -101,11 +100,9 @@ public class Prison
 		return x1;
 	}
 
-
 	public double getY1() {
 		return y1;
 	}
-
 
 	public double getZ1() {
 		return z1;
@@ -157,12 +154,17 @@ public class Prison
 	{
 		return this.miningManager;
 	}
-	
+
+	public JoinSignManager getJoinSignManager() {
+		return joinSignManager;
+	}
+
 	public void autoCheck()
 	{
 		prisonManager.autoCheck();
 		inmateManager.autoCheck();
 		miningManager.autoCheck();
+		joinSignManager.autoCheck();
 	}
 	
 	/**
