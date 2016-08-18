@@ -13,14 +13,9 @@ public class ScoreboardTask extends BukkitRunnable
 	@Override
 	public void run() 
 	{
-			Iterator it = Alcatraz.prisonController.getPrisons().entrySet().iterator();
-			while (it.hasNext()) 
-			{
-			    Map.Entry entry = (Map.Entry) it.next();
-			    Prison prison = (Prison)entry.getValue();
-			    prison.getInmateManager().updateInmateScoreboards();
-			    
-			}
-		
+		for (Prison prison: Alcatraz.prisonController.getPrisons()) {
+			prison.getInmateManager().updateInmateScoreboards();
+
+		}
 	}
 }

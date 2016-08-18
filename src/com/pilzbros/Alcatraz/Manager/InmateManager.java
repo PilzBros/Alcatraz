@@ -1,10 +1,6 @@
 package com.pilzbros.Alcatraz.Manager;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 
 import org.apache.commons.lang3.text.WordUtils;
@@ -160,10 +156,18 @@ public class InmateManager
 	/**
 	 * Prepares and adds inmate to the prison game
 	 */
-	public void newInmate(Player p) {
+	public void newInmate(Player p)
+	{
+		this.newInmate(p, false);
+	}
+
+	/**
+	 * Prepares and adds inmate to the prison game
+	 */
+	public void newInmate(Player p, boolean forced){
 		if (!this.isPlaying(p)) {
 			//Create Inmate
-			Inmate inmate = new Inmate(p.getUniqueId().toString(), 0, Settings.getGlobalInt(Setting.DefaultTime), 0, 0, Settings.getGlobalInt(Setting.DefaultMoney), prison);
+			Inmate inmate = new Inmate(p.getUniqueId().toString(), 0, Settings.getGlobalInt(Setting.DefaultTime), 0, 0, Settings.getGlobalInt(Setting.DefaultMoney), prison, forced);
 
 			//Add to hashmaps
 			this.addInmate(inmate);
@@ -454,19 +458,12 @@ public class InmateManager
 	 */
 	public void updateInmates()
 	{
-		Iterator it = activeInmates.entrySet().iterator();
-		while (it.hasNext()) 
+		ArrayList<Inmate> inmatesToUpdate = new ArrayList<>();
+		inmatesToUpdate.addAll(activeInmates.values());
+		inmatesToUpdate.addAll(inmates.values());
+
+		for (Inmate inmate: inmatesToUpdate)
 		{
-		    Map.Entry entry = (Map.Entry) it.next();
-		    Inmate inmate = (Inmate)entry.getValue();
-		    inmate.update();
-		}
-		
-		Iterator it2 = inmates.entrySet().iterator();
-		while (it.hasNext()) 
-		{
-		    Map.Entry entry = (Map.Entry) it2.next();
-		    Inmate inmate = (Inmate)entry.getValue();
 		    inmate.update();
 		}
 	}
@@ -530,10 +527,8 @@ public class InmateManager
 	public void checkInmates()
 	{
 		if (activeInmates.size() > 0) {
-			Iterator it = activeInmates.entrySet().iterator();
-			while (it.hasNext()) {
-				Map.Entry entry = (Map.Entry) it.next();
-				Inmate inmate = (Inmate) entry.getValue();
+			for (Inmate inmate: new ArrayList<>(activeInmates.values()))
+			{
 				boolean removed = false;
 
 				//Check Strikes

@@ -16,11 +16,8 @@ public class SignUpdate extends BukkitRunnable
 	{
 		if (Alcatraz.prisonController.playersPlaying())
 		{
-			Iterator it = Alcatraz.prisonController.getPrisons().entrySet().iterator();
-			while (it.hasNext()) 
+			for (Prison prison: Alcatraz.prisonController.getPrisons())
 			{
-			    Map.Entry entry = (Map.Entry) it.next();
-			    Prison prison = (Prison)entry.getValue();
 			    prison.getCellManager().updateCellSigns();
 			}
 		}

@@ -98,6 +98,31 @@ public class AdminCommand implements CommandExecutor
 						sender.sendMessage(Alcatraz.pluginPrefix + Alcatraz.language.get(sender, "chatPrisonAdminDeleteCommand", "To delete prison:") + ChatColor.GOLD + "/alca delete [ArenaName]");
 					}
 				}
+				else if (args[0].equalsIgnoreCase("force"))
+				{
+					if (args.length == 3)
+					{
+						if (Alcatraz.prisonController.prisonExists(args[1]))
+						{
+							if (Bukkit.getOfflinePlayer(args[2]).isOnline())
+							{
+								//force
+							}
+							else
+							{
+								sender.sendMessage(Alcatraz.pluginPrefix + Alcatraz.language.get(sender, "chatAdminPlayerNotOnlineForUpdate", "Player [{0}{1}{2}] is not currently online!", ChatColor.RED, args[1], ChatColor.WHITE));
+							}
+						}
+						else
+						{
+							sender.sendMessage(Alcatraz.pluginPrefix + Alcatraz.language.get(sender, "chatAdminPrisonDNE", "Prison [{0}{1}{2}] does not exist!", ChatColor.RED, args[1], ChatColor.WHITE));
+						}
+					}
+					else
+					{
+						sender.sendMessage(Alcatraz.pluginPrefix + Alcatraz.language.get(sender, "chatForceSyntaxError", "{0}Syntax error!{1} To force player: ", ChatColor.RED, ChatColor.WHITE) + ChatColor.GOLD + "/alca force [playerName] [prisonName]");
+					}
+				}
 				else if (args[0].equalsIgnoreCase("kick"))
 				{
 					if (args.length == 3)

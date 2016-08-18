@@ -24,14 +24,19 @@ public class Inmate
 	private Prison prison;
 	private PrisonCell cell;
 	private ScoreboardManager boardManager;
+	private boolean forced;
 
 	
 	private boolean timeWarning; //boolean if should be warning, false if already warned
 	private boolean strikeWarning;
 	private long lastLoot;
-	
-	
+
 	public Inmate(String pUUID, int pMinutesIn, int pMinutesLeft, int pStrikes, int pKills, double pMoney, Prison p)
+	{
+		this(pUUID, pMinutesIn, pMinutesLeft, pStrikes, pKills, pMoney, p, false);
+	}
+	
+	public Inmate(String pUUID, int pMinutesIn, int pMinutesLeft, int pStrikes, int pKills, double pMoney, Prison p, boolean forced)
 	{
 		this.userID = pUUID;
 		this.minutesIn = pMinutesIn;
@@ -46,6 +51,7 @@ public class Inmate
 		this.strikeWarning = true;
 		this.directContactAttempts = 0;
 		this.boardManager = new ScoreboardManager(p, this);
+		this.forced = forced;
 	}
 	
 	public String getUUID()
@@ -128,6 +134,8 @@ public class Inmate
 	{
 		this.kills = amount;
 	}
+
+	public boolean isForced() { return this.forced; }
 	
 	public PrisonCell getCell()
 	{

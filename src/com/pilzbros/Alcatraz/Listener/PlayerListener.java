@@ -193,16 +193,6 @@ public class PlayerListener implements Listener
 	}
 	
 	@EventHandler(priority = EventPriority.NORMAL)
-	public void onBlockPlace(BlockPlaceEvent event)
-	{
-		if (Alcatraz.prisonController.isActivelyPlaying(event.getPlayer()))
-		{
-			event.setCancelled(true);
-			event.getPlayer().sendMessage(Alcatraz.pluginPrefix + ChatColor.RED + Alcatraz.language.get(event.getPlayer(), "chatBlockPlace", "You can not place blocks while playing Alcatraz!"));
-		}
-	}
-	
-	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerTeleport(PlayerTeleportEvent event)
 	{
 		//See if player teleports outside of Alcatraz

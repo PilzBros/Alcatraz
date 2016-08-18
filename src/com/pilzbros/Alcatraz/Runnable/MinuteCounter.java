@@ -16,12 +16,9 @@ public class MinuteCounter implements Runnable
 		if (System.currentTimeMillis() - Alcatraz.lastMinuteCheck >= 60000)
 		{
 			Alcatraz.lastMinuteCheck = System.currentTimeMillis();
-		
-			Iterator it = Alcatraz.prisonController.getPrisons().entrySet().iterator();
-			while (it.hasNext()) 
+
+			for (Prison prison: Alcatraz.prisonController.getPrisons())
 			{
-			    Map.Entry entry = (Map.Entry) it.next();
-			    Prison prison = (Prison)entry.getValue();
 			    prison.getInmateManager().minutePass();
 			}
 		}

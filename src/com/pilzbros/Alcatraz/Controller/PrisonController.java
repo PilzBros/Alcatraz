@@ -1,5 +1,6 @@
 package com.pilzbros.Alcatraz.Controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -33,9 +34,9 @@ public class PrisonController
 		
 	}
 	
-	public HashMap<String, Prison> getPrisons()
+	public ArrayList<Prison> getPrisons()
 	{
-		return this.prisons;
+		return new ArrayList<>(this.prisons.values());
 	}
 	
 	
@@ -98,7 +99,7 @@ public class PrisonController
 	{
 		boolean players = false;
 		
-		Iterator it = Alcatraz.prisonController.getPrisons().entrySet().iterator();
+		Iterator it = prisons.entrySet().iterator();
 		while (it.hasNext()) 
 		{
 		    Map.Entry entry = (Map.Entry) it.next();

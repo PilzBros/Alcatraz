@@ -162,6 +162,22 @@ public class ISS
 		        	}
 		        }
 		        });
+
+		Alcatraz.ISP.addPlaceholder(new Placeholder("alcStrikes")
+		{
+			@Override
+			public String getValue(Player player, Location location,String[] modifiers, Boolean elevation)
+			{
+				if (Alcatraz.prisonController.isActivelyPlaying(player))
+				{
+					return ""+Alcatraz.prisonController.getPlayerPrison(player).getInmateManager().getInmate(player).getStrikes();
+				}
+				else
+				{
+					return "-Not Playing-";
+				}
+			}
+		});
 		   
 		   
 		   

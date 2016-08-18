@@ -1,11 +1,11 @@
 name: Alcatraz
 main: com.pilzbros.Alcatraz.Alcatraz
-version: 1.6.1
+version: 1.6.2
 description: Jail role-play game
 author: Austin Pilz
 website: http://alcatraz.austinpilz.com
 load: POSTWORLD
-softdepend: [Multiverse-Core, Multiworld, Vault, InSignsPlus, LanguageAPI]
+softdepend: [Multiverse-Core, Multiworld, Vault, InSignsPlus]
 commands:
     alcatraz:
         description: Alcatraz user commands

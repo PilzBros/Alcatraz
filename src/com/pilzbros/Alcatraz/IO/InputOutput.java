@@ -150,7 +150,7 @@ public class InputOutput
     
     public void updateDB()
     {
-    	//Update("SELECT Arena  FROM sandfall_signs", "ALTER TABLE sandfall_signs ADD Arena VARCHAR;", "ALTER TABLE sandfall_signs ADD Arena varchar(250);" );
+    	Update("SELECT Forced FROM alcatraz_inmates", "ALTER TABLE alcatraz_inmates ADD Forced BOOLEAN;", "ALTER TABLE alcatraz_inmates ADD Forced BOOLEAN;" );
     }
     
     public void Update(String check, String sql)
@@ -170,16 +170,16 @@ public class InputOutput
     	{
     		try {
     			String[] query;
-    			
+
     			query = sqlite.split(";");
             	Connection conn = getConnection();
     			Statement st = conn.createStatement();
-    			for (String q : query)	
+    			for (String q : query)
     				st.executeUpdate(q);
     			conn.commit();
     			st.close();
     			Alcatraz.log.log(Level.INFO, Alcatraz.consolePrefix + "Database updated to new version!");
-    		} 
+    		}
     		catch (SQLException e)
     		{
     			Alcatraz.log.log(Level.SEVERE, Alcatraz.consolePrefix + "Error while upgrading database to new version!");
@@ -210,11 +210,12 @@ public class InputOutput
 				int strikes = (int)result.getDouble("Strikes");
 				int kills = (int)result.getDouble("Kills");
 				double money = result.getDouble("Money");
+				boolean forced = result.getBoolean("Forced");
 				
 				if (Alcatraz.prisonController.prisonExists(result.getString("Prison")))
 				{
 					Prison p = Alcatraz.prisonController.getPrison(result.getString("Prison"));
-					Inmate i = new Inmate(result.getString("UUID"), minutesIn, minutesLeft, strikes, kills, money, p);
+					Inmate i = new Inmate(result.getString("UUID"), minutesIn, minutesLeft, strikes, kills, money, p, forced);
 					
 					p.getInmateManager().addInmate(i);
 					count++;
@@ -256,7 +257,7 @@ public class InputOutput
 	    	String sql;
 			Connection conn = InputOutput.getConnection();
 			
-			sql = "INSERT INTO alcatraz_inmates (`UUID`, `MinutesIn`, `MinutesLeft`, `Strikes`, `Kills`, `Money`, `Prison`) VALUES (?,?,?,?,?,?,?)";
+			sql = "INSERT INTO alcatraz_inmates (`UUID`, `MinutesIn`, `MinutesLeft`, `Strikes`, `Kills`, `Money`, `Prison`, `Forced`) VALUES (?,?,?,?,?,?,?,?)";
 			PreparedStatement preparedStatement = conn.prepareStatement(sql);
 			
 			
@@ -267,6 +268,9 @@ public class InputOutput
 	        preparedStatement.setDouble(5, inmate.getKills());
 	        preparedStatement.setDouble(6, inmate.getMoney());
 	        preparedStatement.setString(7, inmate.getPrison().getName()+"");
+			preparedStatement.setBoolean(8, inmate.isForced());
+
+
 	        preparedStatement.executeUpdate();
 	        conn.commit();
     	}
@@ -283,7 +287,7 @@ public class InputOutput
     		String sql;
     		Connection conn = InputOutput.getConnection();
     		
-    		sql = "UPDATE `alcatraz_inmates` SET `MinutesIn` = ?, `MinutesLeft` = ?, `Strikes` = ?, `Kills` = ?, `Money` = ?, `Prison` = ? WHERE `UUID` = ?";
+    		sql = "UPDATE `alcatraz_inmates` SET `MinutesIn` = ?, `MinutesLeft` = ?, `Strikes` = ?, `Kills` = ?, `Money` = ?, `Prison` = ?, `Forced` = ? WHERE `UUID` = ?";
 			//update
 			PreparedStatement preparedStatement = conn.prepareStatement(sql);
 	        preparedStatement.setDouble(1, inmate.getMinutesIn());
@@ -293,6 +297,7 @@ public class InputOutput
 	        preparedStatement.setDouble(5, inmate.getMoney());
 	        preparedStatement.setString(6, inmate.getPrison().getName()+"");
 	        preparedStatement.setString(7, inmate.getUUID()+"");
+			preparedStatement.setBoolean(8, inmate.isForced());
 	        preparedStatement.executeUpdate();
 	        connection.commit();
     		
