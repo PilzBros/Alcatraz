@@ -4,7 +4,7 @@ Alcatraz is a unique prison role playing plugin which provides an exciting and a
 # Plugin Information
 For Alcatraz documentation, setup guides and additional information, please see the [Alcatraz Wiki](https://github.com/austinpilz/Alcatraz/wiki)
 
-To install the Alcatraz plugin on your Minecraft server, please download the JAR from the [Alcatraz Spigot Page](http://alcatraz.austinpilz.com)
+To install the Alcatraz plugin on your Minecraft server, please download the JAR from the [Alcatraz Spigot Page](https://www.spigotmc.org/resources/alcatraz.27390/)
 
 # License
 Copyright (C) 2016 Austin Pilz austinpilz@gmail.com
