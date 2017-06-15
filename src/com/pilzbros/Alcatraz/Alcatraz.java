@@ -5,6 +5,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.pilzbros.Alcatraz.IO.SpigotUpdateChecker;
+import com.pilzbros.Alcatraz.Runnable.*;
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.Bukkit;
@@ -29,20 +30,11 @@ import com.pilzbros.Alcatraz.Plugins.InventoryActions;
 import com.pilzbros.Alcatraz.Plugins.LanguageWrapper;
 import com.pilzbros.Alcatraz.Plugins.MetricsLite;
 import com.pilzbros.Alcatraz.Plugins.TitleManagerAPI;
-import com.pilzbros.Alcatraz.Runnable.ChestGenerator;
-import com.pilzbros.Alcatraz.Runnable.InmateUpdate;
-import com.pilzbros.Alcatraz.Runnable.LocationCheck;
-import com.pilzbros.Alcatraz.Runnable.MealService;
-import com.pilzbros.Alcatraz.Runnable.MinuteCounter;
-import com.pilzbros.Alcatraz.Runnable.MoneyDeposit;
-import com.pilzbros.Alcatraz.Runnable.PrisonCheck;
-import com.pilzbros.Alcatraz.Runnable.ScoreboardTask;
-import com.pilzbros.Alcatraz.Runnable.SignUpdate;
 
 public class Alcatraz extends JavaPlugin implements Listener 
 {
 	public static final String pluginName = "Alcatraz";
-	public static final String pluginVersion = "1.6.2";
+	public static final String pluginVersion = "1.6.4";
 	public static final String pluginPrefix = ChatColor.GOLD + "[Alcatraz] " + ChatColor.WHITE;
 	public static final String pluginAdminPrefix = ChatColor.GOLD + "[Alcatraz Admin] " + ChatColor.WHITE;
 	public static final String signPrefix = "[Alcatraz]";
@@ -113,14 +105,12 @@ public class Alcatraz extends JavaPlugin implements Listener
 		//Load Database
 		Alcatraz.IO.LoadSettings();
 		Alcatraz.IO.prepareDB();
+		Alcatraz.IO.updateDB();
 		Alcatraz.IO.loadPrisons();
 		Alcatraz.IO.loadInmates();
 		Alcatraz.IO.loadCells();
 		Alcatraz.IO.loadChests();
 		Alcatraz.IO.loadSigns();
-		
-		//Check Prisoners (in case of reload)
-		Alcatraz.prisonController.checkPlayerReload();
 		
 		//Listeners
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
@@ -132,15 +122,14 @@ public class Alcatraz extends JavaPlugin implements Listener
 		getCommand("alcatrazadmin").setExecutor(new AdminCommand());
 		getCommand("alca").setExecutor(new AdminCommand());
 		
-		//Schedule Tasks
-		int managerTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new MinuteCounter(), 300, 300);
-		BukkitTask scoreboardTask = Bukkit.getScheduler().runTaskTimer(this, new ScoreboardTask(), 40, 40); //Update inmate scoreboards
-		BukkitTask mealService = Bukkit.getScheduler().runTaskTimer(this, new MealService(), 18000, 18000); //Meal Time
-		BukkitTask inmateUpdate = Bukkit.getScheduler().runTaskTimer(this, new InmateUpdate(), 6000, 6000); //Updating inmate information
-		BukkitTask chestGenerator = Bukkit.getScheduler().runTaskTimer(this, new ChestGenerator(), 600, 600); //Refreshing reward chests
-		BukkitTask prisonCheck = Bukkit.getScheduler().runTaskTimer(this, new PrisonCheck(), 200, 200); //10 sec
-		BukkitTask moneyDeposit = Bukkit.getScheduler().runTaskTimer(this, new MoneyDeposit(), 1200, 1200); //Sync Vault balance
-
+		//Schedule Tasks (20 ticks = 1 second)
+		int prisonMinuteCounterTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new MinuteCounter(), 20, 300);
+		int prisonMealServiceTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new MealService(), 20, 180000);
+		int prisonChestRegerationTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new ChestGenerator(), 20, 75600);
+		int prisonAutoCheckTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new PrisonCheck(), 20, 6000);
+		int prisonCellSignUpdateTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new SignUpdate(), 20, 3000);
+		int inmateScoreboardTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new ScoreboardTask(), 20, 300);
+		int inmateDatabaseUpdateTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new InmateCellUpdate(), 12000, 72000);
 		
 		//In Signs Plus
 		Plugin insignsplus = getServer().getPluginManager().getPlugin("InSignsPlus");
@@ -148,6 +137,12 @@ public class Alcatraz extends JavaPlugin implements Listener
 		{
 		        this.ISP = (InSignsPlus) insignsplus;
 		        ISS iss = new ISS();
+		        iss.addPlaceholders(); //Add all placeholders
+				log.log(Level.INFO, consolePrefix + Alcatraz.language.get(Bukkit.getConsoleSender(), "consoleISPHooked", "InSignsPlus detected and hooked"));
+		}
+		else
+		{
+			log.log(Level.INFO, consolePrefix + Alcatraz.language.get(Bukkit.getConsoleSender(), "consoleISP404", "InSignsPlus not found"));
 		}
 		
 		//Metrics
@@ -159,22 +154,25 @@ public class Alcatraz extends JavaPlugin implements Listener
 	    } 
 		catch (IOException e) 
 		{
-	       log.log(Level.WARNING, consolePrefix + Alcatraz.language.get(Bukkit.getConsoleSender(), "consoleMetricsSubmitted", "Encountered an error while attempting to submit metrics!"));
+	       log.log(Level.WARNING, consolePrefix + Alcatraz.language.get(Bukkit.getConsoleSender(), "consoleMetricsSubmitted", "Encountered an error while attempting to submit metrics"));
 	    }
 
 	    //Check for Update
 		Alcatraz.updateChecker = new SpigotUpdateChecker();
 		try {
 			Alcatraz.updateChecker.checkUpdate(Alcatraz.pluginVersion);
-			log.log(Level.INFO, Alcatraz.consolePrefix + language.get(Bukkit.getConsoleSender(), "consolePluginUpdateChecked", "Checked for update! Current version: v{0} - Newest Version: v{1}", Alcatraz.pluginVersion, Alcatraz.updateChecker.getLatestVersion()));
+			log.log(Level.INFO, Alcatraz.consolePrefix + language.get(Bukkit.getConsoleSender(), "consolePluginUpdateChecked", "Checked for update. Current version: v{0} - Newest Version: v{1}", Alcatraz.pluginVersion, Alcatraz.updateChecker.getLatestVersion()));
 		} catch (Exception e) {
 			log.log(Level.INFO, Alcatraz.consolePrefix + language.get(Bukkit.getConsoleSender(), "consolePluginUpdateFailed", "Update check failed!"));
 			e.printStackTrace();
 		}
 
+		//Check Prisoners (in case of reload)
+		Alcatraz.prisonController.checkPlayerReload();
 
-		//Log bootup time
-		log.log(Level.INFO, Alcatraz.consolePrefix + language.get(Bukkit.getConsoleSender(), "consolePluginEnabled", "Bootup took {0} ms", (System.currentTimeMillis() % 1000 - startMili)));
+
+		//Log boot time
+		log.log(Level.INFO, Alcatraz.consolePrefix + language.get(Bukkit.getConsoleSender(), "consolePluginEnabled", "Bootup took {0} ms", (System.currentTimeMillis() - startMili) % 1000));
 	}
 	
 	

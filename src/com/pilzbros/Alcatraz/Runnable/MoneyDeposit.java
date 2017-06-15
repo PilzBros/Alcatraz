@@ -17,7 +17,7 @@ public class MoneyDeposit extends BukkitRunnable
 		{
 			for (Prison prison: Alcatraz.prisonController.getPrisons())
 			{
-				prison.getInmateManager().vaultDeposit();
+				//Removed
 			}
 		}
 	}

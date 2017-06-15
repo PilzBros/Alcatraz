@@ -1,23 +1,18 @@
 package com.pilzbros.Alcatraz.Command;
 
 import java.util.Map.Entry;
-import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.pilzbros.Alcatraz.Alcatraz;
-import com.pilzbros.Alcatraz.IO.Setting;
-import com.pilzbros.Alcatraz.IO.Settings;
 import com.pilzbros.Alcatraz.Objects.Inmate;
 import com.pilzbros.Alcatraz.Objects.Prison;
 import com.pilzbros.Alcatraz.Runnable.PrisonSpawn;
-import com.pilzbros.Alcatraz.Runnable.RespawnDelay;
 
 public class UserCommand implements CommandExecutor
 {
@@ -83,7 +78,7 @@ public class UserCommand implements CommandExecutor
 					{
 						if (Alcatraz.prisonController.prisonExists(args[1]))
 						{
-							if (Alcatraz.prisonController.getPrison(args[1]).getInmateManager().roomAvailable())
+							if (Alcatraz.prisonController.getPrison(args[1]).getInmateManager().isRoomAvailable())
 							{
 								if (!Alcatraz.prisonController.isActivelyPlaying((Player)sender))
 								{

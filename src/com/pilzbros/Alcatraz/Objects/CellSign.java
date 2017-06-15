@@ -37,13 +37,13 @@ public class CellSign
 			Sign sign = this.getSign();
 			sign.setLine(0, ChatColor.RED + prison.getName());
 			sign.setLine(1, "Cell #" + ChatColor.GREEN + this.getCell().getCellNumber());
-			
+
 			if (cell.isOccupied())
 			{
 				OfflinePlayer inmate = Bukkit.getServer().getOfflinePlayer(UUID.fromString(cell.getInmate().getUUID()));
 
 				sign.setLine(2, ChatColor.BLUE + inmate.getName()); //Player Name
-				
+
 				//Online status
 				if (inmate.isOnline())
 				{
@@ -59,7 +59,7 @@ public class CellSign
 				sign.setLine(2, ChatColor.ITALIC + "" + ChatColor.WHITE + "Vacant"); //Empty message
 				sign.setLine(3, "");
 			}
-			
+
 			sign.update();
 		}
 		catch (Exception e)

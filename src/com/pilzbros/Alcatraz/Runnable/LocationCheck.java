@@ -15,7 +15,7 @@ public class LocationCheck extends BukkitRunnable
 	{
 		for (Prison prison: Alcatraz.prisonController.getPrisons())
 		{
-		   prison.getInmateManager().checkLocation();
+		   //Removed
 		}
 	}
 }

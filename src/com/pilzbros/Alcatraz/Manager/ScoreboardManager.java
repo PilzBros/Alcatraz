@@ -16,7 +16,6 @@ public class ScoreboardManager
 	private Prison prison;
 	private Inmate inmate;
 	private BoardManager statsBoard;
-	private BoardManager playerTicker;
 	private BoardManager dummy;
 	
 	public ScoreboardManager(Prison p, Inmate i)
@@ -24,23 +23,23 @@ public class ScoreboardManager
 		this.prison = p;
 		this.inmate = i;
 		this.statsBoard = new BoardManager("PrisonStats", ChatColor.RED + "-- " + WordUtils.capitalize(inmate.getPrison().getName()) + " --", DisplaySlot.SIDEBAR);
-		this.playerTicker = new BoardManager("PlayerTicker", "PRISONER", DisplaySlot.BELOW_NAME);
 		this.dummy = new BoardManager("", "", DisplaySlot.SIDEBAR);
 	}
 	
-	/*
-	 * Called by auto-check to update the boards automatically
+	/**
+	 * Called by auto-check to updateInDatabase the boards for the inmate automatically
 	 */
 	public void updateBoards()
 	{
 		this.updateStats();
-		//this.updateTicker();
 		this.displayStats();
 	}
-	
+
+	/**
+	 * Updates the inmates scores on the scoreboard
+	 */
 	private void updateStats()
 	{
-		//Rank?
 		statsBoard.setObjectiveScore(ChatColor.GREEN + Alcatraz.language.get(inmate.getPlayer(), "scoreboardMoney", "Money"), (int)inmate.getMoney());
 		statsBoard.setObjectiveScore(ChatColor.GOLD + Alcatraz.language.get(inmate.getPlayer(), "scoreboardTimeIn", "Time In"), (int)inmate.getMinutesIn());
 		statsBoard.setObjectiveScore(ChatColor.RED + Alcatraz.language.get(inmate.getPlayer(), "scoreboardTimeLeft", "Time Left"), (int)inmate.getMinutesLeft());
@@ -53,12 +52,10 @@ public class ScoreboardManager
 			statsBoard.setObjectiveScore(ChatColor.BLUE + Alcatraz.language.get(inmate.getPlayer(), "scoreboardCell", "Cell #"), Integer.parseInt(inmate.getCell().getCellNumber()));
 		}
 	}
-	
-	private void updateTicker()
-	{
-		playerTicker.setObjectiveScore(ChatColor.RED + "Kills", (int)inmate.getKills());
-	}
-	
+
+	/**
+	 * Displays the scoreboard to the inmate
+	 */
 	public void displayStats()
 	{
 		if (inmate.getPlayer().isOnline())
@@ -70,7 +67,10 @@ public class ScoreboardManager
 			}
 		}
 	}
-	
+
+	/**
+	 * Removes the scoreboard from display of the inmate
+	 */
 	public void removeScoreboard()
 	{
 		dummy.setScoreboard(inmate.getPlayer());

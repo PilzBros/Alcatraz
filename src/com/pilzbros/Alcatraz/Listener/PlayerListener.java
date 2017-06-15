@@ -66,7 +66,7 @@ public class PlayerListener implements Listener
 
     	if (Alcatraz.updateChecker.isUpdateNeeded() && event.getPlayer().hasPermission("Alcatraz.Admin"))
         {
-            event.getPlayer().sendMessage(Alcatraz.pluginPrefix + Alcatraz.language.get(event.getPlayer(), "chatLoginUpdateNeeded", "{0}Update! {1}A newer version of Alcatraz is available for update! Please update by visiting http://alcatraz.austinpilz.com", ChatColor.GREEN, ChatColor.WHITE));
+            event.getPlayer().sendMessage(Alcatraz.pluginPrefix + Alcatraz.language.get(event.getPlayer(), "chatLoginUpdateNeeded", "{0}Update! {1}A newer version of Alcatraz is available for update! Please updateInDatabase by visiting https://www.spigotmc.org/resources/alcatraz.27390/", ChatColor.GREEN, ChatColor.WHITE));
         }
 
     }
@@ -198,16 +198,11 @@ public class PlayerListener implements Listener
 		//See if player teleports outside of Alcatraz
 		if (Alcatraz.prisonController.isActivelyPlaying(event.getPlayer()))
 		{
-			if (!Alcatraz.prisonController.getPlayerPrison(event.getPlayer()).getInmateManager().isWithinPrison(event.getPlayer(), event.getTo()))
+			if (!Alcatraz.prisonController.getPlayerPrison(event.getPlayer()).isLocationWithinPrisonBoundaries(event.getTo()))
 			{
 				event.setCancelled(true);
 				event.getPlayer().sendMessage(Alcatraz.pluginPrefix + ChatColor.RED + Alcatraz.language.get(event.getPlayer(), "chatNoTeleport", "You cannot teleport outside of prison while playing!"));
 			}
-		}
-		else
-		{
-			//Player is not playing Alcatraz
-			event.setCancelled(false);
 		}
 	}
 	
@@ -342,16 +337,33 @@ public class PlayerListener implements Listener
 		{
 			//Not playing
 			try {
-				if (event.getClickedBlock().getType().equals(Material.SIGN) || event.getClickedBlock().getType().equals(Material.WALL_SIGN) || event.getClickedBlock().getType().equals(Material.SIGN_POST)) {
-					Sign s = (Sign) event.getClickedBlock().getState();
-					String[] lines = s.getLines();
+				if (event.getAction().equals(Action.LEFT_CLICK_BLOCK) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+					if (event.getClickedBlock().getType().equals(Material.SIGN) || event.getClickedBlock().getType().equals(Material.WALL_SIGN) || event.getClickedBlock().getType().equals(Material.SIGN_POST)) {
+						Sign s = (Sign) event.getClickedBlock().getState();
+						String[] lines = s.getLines();
 
-					if (lines[0].equalsIgnoreCase(ChatColor.RED + Alcatraz.signPrefix)) {
-						if (Alcatraz.prisonController.prisonExists(lines[1])) {
-							Prison p = Alcatraz.prisonController.getPrison(lines[1]);
+						if (lines[0].equalsIgnoreCase(ChatColor.RED + Alcatraz.signPrefix)) {
+							if (Alcatraz.prisonController.prisonExists(lines[1]))
+							{
+								Prison p = Alcatraz.prisonController.getPrison(lines[1]);
 
-							if (lines[3].equalsIgnoreCase("Click to join!")) {
-								p.getInmateManager().newInmate(event.getPlayer());
+								if (lines[3].equalsIgnoreCase("Click to join!"))
+								{
+									if (p.getInmateManager().isRoomAvailable())
+									{
+										p.getInmateManager().newInmate(event.getPlayer());
+									}
+									else
+									{
+										event.getPlayer().sendMessage(Alcatraz.pluginPrefix + Alcatraz.language.get(event.getPlayer(), "chatAlcatrazPrisonFull", "Prison {0}{1}{2} is currently full", ChatColor.RED, p.getName(), ChatColor.WHITE));
+									}
+
+								}
+							}
+							else
+							{
+								//Prison doesn't exist
+								event.getPlayer().sendMessage(Alcatraz.pluginPrefix + Alcatraz.language.get(event.getPlayer(), "chatAlcatrazPrisonDNE", "Prison {0}{1}{2} does not exist", ChatColor.RED, lines[1], ChatColor.WHITE));
 							}
 						}
 					}

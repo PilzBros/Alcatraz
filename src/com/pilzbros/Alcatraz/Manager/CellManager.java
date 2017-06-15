@@ -18,22 +18,48 @@ public class CellManager
 		this.prison = p;
 		this.cells = new HashMap<String, PrisonCell>();
 	}
-	
+
+	/**
+	 * Returns HashMap of cells
+	 * @return
+	 */
+	public HashMap<String, PrisonCell> getCells()
+	{
+		return cells;
+	}
+
+
+	/**
+	 * Returns number of cells
+	 */
+	public int getNumCells()
+	{
+		return cells.size();
+	}
+
+	/**
+	 * Adds a cell to the prison
+	 * @param cell
+	 */
 	public void addCell(PrisonCell cell)
 	{
 		cells.put(cell.getCellNumber(), cell);
 	}
 
-	public void removeCell(PrisonCell cell)
-	{
-		removeCell(cell.getCellNumber());
-	}
-	
+	/**
+	 * Removes a cell from the prison
+	 * @param num
+	 */
 	public void removeCell (String num)
 	{
 		cells.remove(num);
 	}
 
+	/**
+	 * Returns cell object by supplied cell number
+	 * @param num
+	 * @return
+	 */
 	public PrisonCell getCell (String num)
 	{
 		if (cells.containsKey(num))
@@ -62,10 +88,22 @@ public class CellManager
 	{
 		return cellExists(Integer.toString(num));
 	}
-	
-	public HashMap<String, PrisonCell> getCells()
+
+	/**
+	 * Returns if there is an empty cell
+	 * @return
+	 */
+	public boolean isAvailableCell()
 	{
-		return cells;
+		for(Entry<String, PrisonCell> cell : this.getCells().entrySet())
+		{
+			if (!cell.getValue().isOccupied())
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	public void updateCellSigns()
@@ -88,7 +126,6 @@ public class CellManager
 				if (!cell.getValue().isOccupied())
 				{
 					cell.getValue().setInmate(i);
-					cell.getValue().updateSigns();
 					i.setCell(cell.getValue());
 					ic = cell.getValue();
 					found = true;
@@ -99,7 +136,7 @@ public class CellManager
 		return found;
 	}
 
-	/*
+	/**
 	 * Updates all cells in database
 	 */
 	public void updateCells()
@@ -109,21 +146,7 @@ public class CellManager
 			Alcatraz.IO.updateCell(cell.getValue());
 		}
 	}
-	
-	/**
-	 * Returns number of cells
-	 */
-	public int getNumCells()
-	{
-		int count = 0;
-		
-		for(Entry<String, PrisonCell> cell : this.getCells().entrySet()) 
-		{	
-			count++;
-		}
-		
-		return count;
-	}
+
 	
 
 

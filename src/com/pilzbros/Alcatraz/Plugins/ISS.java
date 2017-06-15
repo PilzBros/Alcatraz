@@ -8,7 +8,11 @@ import com.pilzbros.Alcatraz.Alcatraz;
 
 public class ISS 
 {
-	public ISS()
+	public ISS() {
+		//
+	}
+
+	public void addPlaceholders()
 	{
 		   Alcatraz.ISP.addPlaceholder(new Placeholder("alcMoney")
 		    {

@@ -44,11 +44,11 @@ public class AdminCommand implements CommandExecutor
 						sender.sendMessage(Alcatraz.pluginPrefix + Alcatraz.language.get(sender, "chatSetupHereNotStarted", "You are not currently setting up a prison"));
 					}
 				}
-				else if (args[0].equalsIgnoreCase("update"))
+				else if (args[0].equalsIgnoreCase("updateInDatabase"))
 				{
 					if (Alcatraz.updateChecker.isUpdateNeeded())
 					{
-						sender.sendMessage(Alcatraz.pluginPrefix + Alcatraz.language.get(sender, "chatUpdateNeeded", "You are running Alcatraz v{0} and the latest version is v{1}. Visit the Spigot page to update!", Alcatraz.pluginVersion, Alcatraz.updateChecker.getLatestVersion()));
+						sender.sendMessage(Alcatraz.pluginPrefix + Alcatraz.language.get(sender, "chatUpdateNeeded", "You are running Alcatraz v{0} and the latest version is v{1}. Visit the Spigot page to updateInDatabase!", Alcatraz.pluginVersion, Alcatraz.updateChecker.getLatestVersion()));
 					}
 					else
 					{
@@ -74,14 +74,14 @@ public class AdminCommand implements CommandExecutor
 						sender.sendMessage(Alcatraz.pluginPrefix + Alcatraz.language.get(sender, "chatPrisonAdminSetupCommand", "To setup prison:") + ChatColor.GOLD + "/alca setup [ArenaName]");
 					}
 				}
-				else if (args[0].equalsIgnoreCase("delete"))
+				else if (args[0].equalsIgnoreCase("deletePrison"))
 				{
 					if (args.length == 2)
 					{
 						if (Alcatraz.prisonController.prisonExists(args[1]))
 						{
 							Prison p = Alcatraz.prisonController.getPrison(args[1]);
-							p.delete();
+							p.deletePrison();
 							
 							//Send success message
 							sender.sendMessage(Alcatraz.pluginPrefix + Alcatraz.language.get(sender, "chatPrisonDeletedSuccess", "Prison [{0}{1}{2}] removed {3}successfuly{4}!", ChatColor.RED, args[1], ChatColor.WHITE, ChatColor.GREEN, ChatColor.WHITE));
@@ -95,7 +95,7 @@ public class AdminCommand implements CommandExecutor
 					else
 					{
 						//Send setup command
-						sender.sendMessage(Alcatraz.pluginPrefix + Alcatraz.language.get(sender, "chatPrisonAdminDeleteCommand", "To delete prison:") + ChatColor.GOLD + "/alca delete [ArenaName]");
+						sender.sendMessage(Alcatraz.pluginPrefix + Alcatraz.language.get(sender, "chatPrisonAdminDeleteCommand", "To deletePrison prison:") + ChatColor.GOLD + "/alca deletePrison [ArenaName]");
 					}
 				}
 				else if (args[0].equalsIgnoreCase("force"))
@@ -198,8 +198,8 @@ public class AdminCommand implements CommandExecutor
 								}
 								else
 								{
-									//Unknown setting to update
-									sender.sendMessage(Alcatraz.pluginPrefix + ChatColor.RED + Alcatraz.language.get(sender, "chatAdminUpdateSettingUnknown", "Unknown setting to update!"));
+									//Unknown setting to updateInDatabase
+									sender.sendMessage(Alcatraz.pluginPrefix + ChatColor.RED + Alcatraz.language.get(sender, "chatAdminUpdateSettingUnknown", "Unknown setting to updateInDatabase!"));
 								}
 							}
 							else

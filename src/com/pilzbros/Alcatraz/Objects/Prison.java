@@ -6,6 +6,8 @@ import org.bukkit.Location;
 
 import com.pilzbros.Alcatraz.Alcatraz;
 
+import java.util.Arrays;
+
 public class Prison 
 {
 	private String prisonName;
@@ -22,9 +24,7 @@ public class Prison
 	
 	private Location startPoint;
 	private Location returnPoint;
-	
-	
-	private final PrisonManager prisonManager;
+
 	private final InmateManager inmateManager;
 	private final ChestManager chestManager;
 	private final CellManager cellManager;
@@ -45,7 +45,6 @@ public class Prison
 		this.z2 = pz2;
 		this.startPoint = new Location (Bukkit.getWorld(pWorld), pstartx, pstarty, pstartz);
 		this.returnPoint = new Location (Bukkit.getWorld(rWorld), preturnx, preturny, preturnz);
-		this.prisonManager = new PrisonManager(this);
 		this.inmateManager = new InmateManager(this);
 		this.chestManager = new ChestManager(this);
 		Prison.lastRaid = 0;
@@ -66,7 +65,6 @@ public class Prison
 		this.z2 = pz2;
 		this.startPoint = pstart;
 		this.returnPoint = preturn;
-		this.prisonManager = new PrisonManager(this);
 		this.inmateManager = new InmateManager(this);
 		this.chestManager = new ChestManager(this);
 		this.cellManager = new CellManager(this);
@@ -75,7 +73,7 @@ public class Prison
 		Prison.lastRaid = 0;
 	}
 	
-	/*
+	/**
 	 * Returns the prison's name
 	 */
 	public String getName()
@@ -83,18 +81,25 @@ public class Prison
 		return this.prisonName;
 	}
 
+	/**
+	 * Return the maximum number of inmates allowed in the prison
+	 * @return
+	 */
 	public int getMaxInmates()
 	{
 		return this.maxInmates;
 	}
-	
+
+	/**
+	 * Sets the maximum number of inmates allowed in a prison
+	 * @param max
+	 */
 	public void setMaxInmates(int max)
 	{
 		this.maxInmates = max;
-		//TODO - add DB update function
+		//TODO - add DB updateInDatabase function
 	}
 
-	
 	public double getX1() 
 	{
 		return x1;
@@ -129,11 +134,6 @@ public class Prison
 	{
 		return this.returnPoint;
 	}
-
-	public PrisonManager getPrisonManager()
-	{
-		return this.prisonManager;
-	}
 	
 	public InmateManager getInmateManager()
 	{
@@ -159,12 +159,43 @@ public class Prison
 		return joinSignManager;
 	}
 
+	/**
+	 * Actions for a prison performed on a regular basis
+	 */
 	public void autoCheck()
 	{
-		prisonManager.autoCheck();
-		inmateManager.autoCheck();
 		miningManager.autoCheck();
 		joinSignManager.autoCheck();
+	}
+
+	/**
+	 * Returns if the supplied location is within the prison boundaries
+	 * @param inQuestion
+	 * @return
+	 */
+	public boolean isLocationWithinPrisonBoundaries(Location inQuestion)
+	{
+		double[] dim = new double[2];
+
+		dim[0] = getX1();
+		dim[1] = getX2();
+		Arrays.sort(dim);
+		if(inQuestion.getX() > dim[1] || inQuestion.getX() < dim[0])
+			return false;
+
+		dim[0] = getY1();
+		dim[1] = getY2();
+		Arrays.sort(dim);
+		if(inQuestion.getY() > dim[1] || inQuestion.getY() < dim[0])
+			return false;
+
+		dim[0] = getZ1();
+		dim[1] = getZ2();
+		Arrays.sort(dim);
+		if(inQuestion.getZ() > dim[1] || inQuestion.getZ() < dim[0])
+			return false;
+
+		return true;
 	}
 	
 	/**
@@ -174,22 +205,25 @@ public class Prison
 	{
 		chestManager.regenerateFoodChests();
 	}
-	
+
+	/**
+	 * Performs permanent prison shutdown actions
+	 */
 	public void shutdownActions()
 	{
 		miningManager.forceRegenerate();
 		inmateManager.updateInmates();
 		cellManager.updateCells();
-		joinSignManager.markSignsDeleted();
 	}
 	
 	/**
 	 * Delete's prison from Alcatraz and DB
 	 */
-	public void delete()
+	public void deletePrison()
 	{
 		shutdownActions();
-		inmateManager.releaseInmates();
+		inmateManager.releaseAllInmates();
+		joinSignManager.markSignsDeleted();
 		Alcatraz.IO.deletePrison(this);
 		Alcatraz.prisonController.removePrison(this);
 

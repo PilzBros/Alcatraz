@@ -129,7 +129,7 @@ public class InputOutput
         		st = conn.createStatement();
             	st.executeUpdate("CREATE TABLE IF NOT EXISTS \"alcatraz_prisons\" (\"Name\" VARCHAR PRIMARY KEY NOT NULL, \"Max\" DOUBLE, \"X1\" DOUBLE, \"Y1\" DOUBLE, \"Z1\" DOUBLE, \"X2\" DOUBLE, \"Y2\" DOUBLE, \"Z2\" DOUBLE, \"ReturnX\" DOUBLE, \"ReturnY\" DOUBLE, \"ReturnZ\" DOUBLE, \"StartX\" DOUBLE, \"StartY\" DOUBLE, \"StartZ\" DOUBLE, \"playWorld\" VARCHAR, \"returnWorld\" VARCHAR)");
                 st.executeUpdate("CREATE TABLE IF NOT EXISTS \"alcatraz_signs\" (\"X\" DOUBLE, \"Y\" DOUBLE, \"Z\" DOUBLE, \"World\" VARCHAR, \"Prison\" VARCHAR, \"Type\" VARCHAR, \"Cell\" VARCHAR)");
-                st.executeUpdate("CREATE TABLE IF NOT EXISTS \"alcatraz_inmates\" (\"UUID\" VARCHAR PRIMARY KEY  NOT NULL, \"MinutesIn\" DOUBLE, \"MinutesLeft\" DOUBLE, \"Strikes\" DOUBLE, \"Kills\" DOUBLE, \"Money\" DOUBLE, \"Prison\" VARCHAR)");
+                st.executeUpdate("CREATE TABLE IF NOT EXISTS \"alcatraz_inmates\" (\"UUID\" VARCHAR PRIMARY KEY  NOT NULL, \"MinutesIn\" DOUBLE, \"MinutesLeft\" DOUBLE, \"Strikes\" DOUBLE, \"Kills\" DOUBLE, \"Money\" DOUBLE, \"Prison\" VARCHAR, \"Forced\" DOUBLE)");
                 st.executeUpdate("CREATE TABLE IF NOT EXISTS \"alcatraz_chests\" (\"X\" DOUBLE, \"Y\" DOUBLE, \"Z\" DOUBLE, \"World\" DOUBLE, \"Prison\" VARCHAR, \"Type\" VARCHAR, \"Cell\" VARCHAR)");
                 st.executeUpdate("CREATE TABLE IF NOT EXISTS \"alcatraz_cells\" (\"Prison\" VARCHAR, \"CellNumber\" VARCHAR, \"InmateUUID\" VARCHAR)");
                 
@@ -150,7 +150,7 @@ public class InputOutput
     
     public void updateDB()
     {
-    	Update("SELECT Forced FROM alcatraz_inmates", "ALTER TABLE alcatraz_inmates ADD Forced BOOLEAN;", "ALTER TABLE alcatraz_inmates ADD Forced BOOLEAN;" );
+    	Update("SELECT Forced FROM alcatraz_inmates", "ALTER TABLE alcatraz_inmates ADD Forced DOUBLE;", "ALTER TABLE alcatraz_inmates ADD Forced DOUBLE;" );
     }
     
     public void Update(String check, String sql)
@@ -188,8 +188,11 @@ public class InputOutput
     	}
         
 	}
-    
-    public void loadInmates()
+
+	/**
+	 * Loads inmates from the database
+	 */
+	public void loadInmates()
     {
     	try
 		{
@@ -197,7 +200,7 @@ public class InputOutput
 			PreparedStatement ps = null;
 			ResultSet result = null;
 			conn = getConnection();
-			ps = conn.prepareStatement("SELECT `UUID`, `MinutesIn`, `MinutesLeft`, `Strikes`, `Kills`, `Money`, `Prison` FROM `alcatraz_inmates`");
+			ps = conn.prepareStatement("SELECT `UUID`, `MinutesIn`, `MinutesLeft`, `Strikes`, `Kills`, `Money`, `Prison`, `Forced` FROM `alcatraz_inmates`");
 			result = ps.executeQuery();
 			
 			int count = 0;
@@ -210,7 +213,18 @@ public class InputOutput
 				int strikes = (int)result.getDouble("Strikes");
 				int kills = (int)result.getDouble("Kills");
 				double money = result.getDouble("Money");
-				boolean forced = result.getBoolean("Forced");
+
+
+				boolean forced = false;
+
+				if (result.getDouble("Forced") > 0)
+				{
+					forced = true;
+				}
+				else
+				{
+					forced = false;
+				}
 				
 				if (Alcatraz.prisonController.prisonExists(result.getString("Prison")))
 				{
@@ -249,10 +263,14 @@ public class InputOutput
 			Alcatraz.log.log(Level.WARNING, Alcatraz.consolePrefix + Alcatraz.language.get(Bukkit.getConsoleSender(), "consoleInmatesLoadError", "Encountered an issue while attempting to load inmates..."));
 		}
     }
-    
-    public void newInmate(Inmate inmate)
+
+	/**
+	 * Adds new inmate to the database
+	 * @param inmate
+	 */
+	public void newInmate(Inmate inmate)
     {
-    	try 
+    	try
     	{
 	    	String sql;
 			Connection conn = InputOutput.getConnection();
@@ -268,7 +286,16 @@ public class InputOutput
 	        preparedStatement.setDouble(5, inmate.getKills());
 	        preparedStatement.setDouble(6, inmate.getMoney());
 	        preparedStatement.setString(7, inmate.getPrison().getName()+"");
-			preparedStatement.setBoolean(8, inmate.isForced());
+
+	        if (inmate.isForced())
+			{
+				preparedStatement.setDouble(8, 1.0);
+			}
+			else
+			{
+				preparedStatement.setDouble(8, 0.0);
+			}
+
 
 
 	        preparedStatement.executeUpdate();
@@ -276,11 +303,15 @@ public class InputOutput
     	}
     	catch (SQLException e) 
 		{
-    		Alcatraz.log.log(Level.WARNING, Alcatraz.consolePrefix + Alcatraz.language.get(Bukkit.getConsoleSender(), "consoleInmateStoreError", "Encountered an error when attempting to store inmate to database..."));
+    		Alcatraz.log.log(Level.WARNING, Alcatraz.consolePrefix + Alcatraz.language.get(Bukkit.getConsoleSender(), "consoleInmateStoreError", "Encountered an error when attempting to store inmate to database..." + e.getMessage()));
 		}
     }
-    
-    public void updateInmate(Inmate inmate)
+
+	/**
+	 * Updates inmate in the database
+	 * @param inmate
+	 */
+	public void updateInmate(Inmate inmate)
     {
     	try 
 		{
@@ -288,7 +319,7 @@ public class InputOutput
     		Connection conn = InputOutput.getConnection();
     		
     		sql = "UPDATE `alcatraz_inmates` SET `MinutesIn` = ?, `MinutesLeft` = ?, `Strikes` = ?, `Kills` = ?, `Money` = ?, `Prison` = ?, `Forced` = ? WHERE `UUID` = ?";
-			//update
+			//updateInDatabase
 			PreparedStatement preparedStatement = conn.prepareStatement(sql);
 	        preparedStatement.setDouble(1, inmate.getMinutesIn());
 	        preparedStatement.setDouble(2, inmate.getMinutesLeft());
@@ -297,7 +328,14 @@ public class InputOutput
 	        preparedStatement.setDouble(5, inmate.getMoney());
 	        preparedStatement.setString(6, inmate.getPrison().getName()+"");
 	        preparedStatement.setString(7, inmate.getUUID()+"");
-			preparedStatement.setBoolean(8, inmate.isForced());
+			if (inmate.isForced())
+			{
+				preparedStatement.setDouble(8, 1.0);
+			}
+			else
+			{
+				preparedStatement.setDouble(8, 0.0);
+			}
 	        preparedStatement.executeUpdate();
 	        connection.commit();
     		
@@ -307,12 +345,21 @@ public class InputOutput
 		} 
 		catch (SQLException e) 
 		{
-			Alcatraz.log.log(Level.WARNING, Alcatraz.consolePrefix + Alcatraz.language.get(Bukkit.getConsoleSender(), "consoleInmateUpdateError", "Encountered an issue while attempting to update inmate {0}", inmate.getPlayer().getName()));
+			Alcatraz.log.log(Level.WARNING, Alcatraz.consolePrefix + Alcatraz.language.get(Bukkit.getConsoleSender(), "consoleInmateUpdateError", "Encountered an issue while attempting to updateInDatabase inmate {0}", inmate.getPlayer().getName()));
 		}
     }
-    
+
+	/**
+	 * Removes inmate from Alcatraz DB
+	 * @param inmate
+	 */
+	public void deleteInmate(Inmate inmate)
+	{
+		deleteInmate(Bukkit.getOfflinePlayer(UUID.fromString(inmate.getUUID())));
+	}
+
     /**
-     * Removes player from Alcatraz DB
+     * Removes inmate from database
      * @param player
      */
     public void deleteInmate(OfflinePlayer player)
@@ -329,19 +376,10 @@ public class InputOutput
 		} 
     	catch (SQLException e) 
     	{
-    		Alcatraz.log.log(Level.WARNING, Alcatraz.consolePrefix + Alcatraz.language.get(Bukkit.getConsoleSender(), "consoleInmateDeleteError", "Encountered an issue while attempting to delete inmate {0}", player.getName()));
+    		Alcatraz.log.log(Level.WARNING, Alcatraz.consolePrefix + Alcatraz.language.get(Bukkit.getConsoleSender(), "consoleInmateDeleteError", "Encountered an issue while attempting to deletePrison inmate {0}", player.getName()));
 		}
     }
-    
-    /**
-     * Removes inmate from Alcatraz DB
-     * @param inmate
-     */
-    public void deleteInmate(Inmate inmate)
-    {
-    	deleteInmate(Bukkit.getOfflinePlayer(UUID.fromString(inmate.getUUID())));
-    }
-    
+
     public void loadPrisons()
     {
     	try
@@ -826,7 +864,7 @@ public class InputOutput
     		Connection conn = InputOutput.getConnection();
     		
     		sql = "UPDATE `alcatraz_cells` SET `InmateUUID` = ? WHERE `Prison` = ? AND `CellNumber` = ?";
-			//update
+			//updateInDatabase
 			PreparedStatement preparedStatement = conn.prepareStatement(sql);
 			
 			if (c.isOccupied())
@@ -848,7 +886,7 @@ public class InputOutput
 		} 
 		catch (SQLException e) 
 		{
-			Alcatraz.log.log(Level.WARNING, Alcatraz.consolePrefix + Alcatraz.language.get(Bukkit.getConsoleSender(), "consoleUpdatePrisonCellError", "Error while attempting to update prison cell") + e.getMessage());
+			Alcatraz.log.log(Level.WARNING, Alcatraz.consolePrefix + Alcatraz.language.get(Bukkit.getConsoleSender(), "consoleUpdatePrisonCellError", "Error while attempting to updateInDatabase prison cell") + e.getMessage());
 		}
     }
 
